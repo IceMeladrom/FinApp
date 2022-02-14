@@ -7,8 +7,10 @@ from django.db import models
 class Users(models.Model):
     Nickname = models.TextField(unique=True)
     Password = models.TextField()
-    Email = models.EmailField()
+    Email = models.EmailField(unique=True)
     Amount = models.IntegerField(default=0)
+    Name = models.TextField()
+    Surname = models.TextField()
 
 
 class Statistics(models.Model):
