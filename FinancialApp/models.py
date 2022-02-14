@@ -5,7 +5,7 @@ from django.db import models
 
 # Create your models here.
 class Users(models.Model):
-    Nickname = models.TextField(unique=True)
+    Login = models.TextField(unique=True)
     Password = models.TextField()
     Email = models.EmailField(unique=True)
     Amount = models.IntegerField(default=0)
