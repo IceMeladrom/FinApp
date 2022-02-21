@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<style>
+    .table {
+        width: 100%;
+        margin-bottom: 20px;
+        border: 1px solid #dddddd;
+        border-collapse: collapse;
+    }
+
+    .table th {
+        font-weight: bold;
+        padding: 5px;
+        background: #efefef;
+        border: 1px solid #dddddd;
+    }
+
+    .table td {
+        border: 1px solid #dddddd;
+        padding: 5px;
+    }
+</style>
+<body>
+<form method="POST">
+    {% csrf_token %}
+    {{ form }}
+    <button name="Plus">Добавить</button>
+</form>
+<form method="POST">
+    {% csrf_token %}
+    {{ form }}
+    <button name="Minus">Убавить</button>
+</form>
+<table class="table">
+    <thead>
+    <tr>
+        <th>Операция</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for i in table %}
+        <tr>
+            {% if i.1 == "Зарплата" %}
+                <td style="color: green">+{{ i.0 }}$</td>
+            {% else %}
+                <td style="color: darkred">{{ i.0 }}$</td>
+            {% endif %}
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</body>
+</html>

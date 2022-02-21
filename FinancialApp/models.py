@@ -1,5 +1,5 @@
 from django.db import models
-from django.utils import timezone
+from django.utils.timezone import now
 
 
 # Create your models here.
@@ -15,5 +15,5 @@ class Users(models.Model):
 class Statistics(models.Model):
     UserID = models.IntegerField()
     Amount = models.IntegerField()
-    Date = models.DateTimeField(default=timezone.now)
+    Date = models.DateTimeField(default=now, null=True)
     Category = models.TextField()
