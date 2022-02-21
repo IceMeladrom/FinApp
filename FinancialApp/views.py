@@ -1,8 +1,8 @@
 from django.db import connection
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 import django.db.utils
-import forms
-import models
+import FinancialApp.forms
+import FinancialApp.models
 
 
 # Create your views here.
@@ -10,11 +10,11 @@ def index(request):
     return render(request, 'index.html')
 
 
-def sign_up(request):
+def register(request):
     context = {}
     error = False
     if request.method == 'POST':
-        form = forms.SignUp(request.POST)
+        form = FinancialApp.forms.Register(request.POST)
 
         if form.is_valid():
             login = form.data['Login']
@@ -28,20 +28,36 @@ def sign_up(request):
                 error = True
             else:
                 try:
-                    data = models.Users(Login=login, Password=password, Email=email, Name=name, Surname=surname)
+                    data = FinancialApp.models.Users(Login=login, Password=password, Email=email, Name=name,
+                                                     Surname=surname)
                 except django.db.utils.IntegrityError:
                     error = True
 
-    form = forms.SignUp()
+    form = FinancialApp.forms.Register()
     context['error'] = error
     context['form'] = form
-    return render(request, 'signup.html', context)
+    return render(request, 'register.html', context)
 
 
-def sign_in(request):
+def login(request):
+    context = {}
+    error = False
     if request.method == 'POST':
-        form = forms.SignUp(request.POST)
+        form = FinancialApp.forms.Login(request.POST)
 
         if form.is_valid():
             login = form.data['Login']
             password = form.data['Password']
+            with connection.cursor() as cursor:
+                data = cursor.execute('SELECT Login, Password FROM FinancialApp_users WHERE Login==%s AND Password==%s',
+                                      [login, password]).fetchone()
+            if data is None:
+                error = True
+            else:
+                request.session['login'] = login
+                return redirect('/')
+
+    form = FinancialApp.forms.Login()
+    context['form'] = form
+    context['error'] = error
+    return render(request, 'login.html', context)

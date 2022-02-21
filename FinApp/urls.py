@@ -22,5 +22,6 @@ from FinancialApp import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.index)
+    path('', views.index),
+    path('login/', views.login),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
