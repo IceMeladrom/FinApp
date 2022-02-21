@@ -30,6 +30,8 @@ def register(request):
                 try:
                     data = FinancialApp.models.Users(Login=login, Password=password, Email=email, Name=name,
                                                      Surname=surname)
+                    data.save()
+                    return redirect('/login/')
                 except django.db.utils.IntegrityError:
                     error = True
 

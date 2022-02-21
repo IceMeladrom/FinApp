@@ -8,6 +8,10 @@
     <title>Document</title>
 </head>
 <body>
-
+<form method="POST">
+    {% csrf_token %}
+    {{ form }}
+    <button>Жмяк</button>
+</form>
 </body>
 </html>
