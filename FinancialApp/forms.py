@@ -2,6 +2,8 @@ from django import forms
 
 
 # Create your forms here.
+
+
 class Register(forms.Form):
     Login = forms.CharField(label='Введите логин', min_length=4, max_length=64)
     Password = forms.CharField(label='Введите пароль', min_length=5, widget=forms.PasswordInput)
@@ -14,3 +16,7 @@ class Register(forms.Form):
 class Login(forms.Form):
     Login = forms.CharField(label='Введите логин', min_length=4, max_length=64)
     Password = forms.CharField(label='Введите пароль', min_length=5, widget=forms.PasswordInput)
+
+
+class Transaction(forms.Form):
+    Amount = forms.IntegerField(label='Введите сумму')

@@ -12,6 +12,45 @@ def index(request):
     return render(request, 'index.html', context)
 
 
+def diary(request):
+    if is_login(request):
+        context = {}
+        error = False
+        user_id = get_user_id(request)
+
+        if request.method == 'POST':
+            form = FinancialApp.forms.Transaction(request.POST)
+            if form.is_valid():
+                if 'Plus' in form.data:
+                    print('plus')
+                    amount = abs(int(form.data['Amount']))
+                    with connection.cursor() as cursor:
+                        cursor.execute(
+                            'INSERT INTO FinancialApp_statistics(UserID, Amount, Category) VALUES(%s, %s, %s)',
+                            [user_id, amount, 'Зарплата'])
+                else:
+                    print('minus')
+                    amount = -1 * abs(int(form.data['Amount']))
+                    with connection.cursor() as cursor:
+                        cursor.execute(
+                            'INSERT INTO FinancialApp_statistics(UserID, Amount, Category) VALUES(%s, %s, %s)',
+                            [user_id, amount, 'Трата'])
+                with connection.cursor() as cursor:
+                    cursor.execute('UPDATE FinancialApp_users SET Amount = Amount + %s WHERE id == %s',
+                                   [amount, user_id])
+
+        table = get_transaction_table(user_id)
+        form = FinancialApp.forms.Transaction()
+        print(table)
+        context['table'] = table
+        context['form'] = form
+        context['error'] = error
+
+        return render(request, 'diary.html', context)
+    else:
+        return redirect('/login/')
+
+
 def register(request):
     if not is_login(request):
         context = {}
@@ -84,3 +123,18 @@ def is_login(request):
     if request.session.get('login') is None:
         return False
     return True
+
+
+def get_user_id(request):
+    login = request.session['login']
+    with connection.cursor() as cursor:
+        user_id = cursor.execute('SELECT id FROM FinancialApp_users WHERE Login==%s', [login]).fetchone()[0]
+    return user_id
+
+
+def get_transaction_table(user_id):
+    with connection.cursor() as cursor:
+        data = cursor.execute('SELECT Amount, Category FROM FinancialApp_statistics WHERE UserID == %s',
+                              [user_id]).fetchall()
+
+    return data
