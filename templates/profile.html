@@ -5,19 +5,13 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>Profile</title>
 </head>
 <body>
-<h1>Hello</h1>
-
-<a href="login/">login</a>
-<br>
-<a href="register/">register</a>
-<br>
-<a href="logout/">logout</a>
-<br>
-<a href="diary">diary</a>
-<br>
-<a href="profile">profile</a>
+{% for i in data %}
+    <div>{{ i.0 }}: {{ i.1 }}</div>
+{% endfor %}
+<a href="change/">Изменить данные</a>
+<a href="../">Назад</a>
 </body>
 </html>

@@ -1,3 +1,5 @@
+import itertools
+
 from django.db import connection
 from django.shortcuts import render, redirect
 import django.db.utils
@@ -10,6 +12,68 @@ def index(request):
     context = {}
     context['is_login'] = is_login(request)
     return render(request, 'index.html', context)
+
+
+def change_profile_data(request):
+    context = {}
+    error = False
+    context['error'] = error
+
+    if request.method == 'POST':
+        form = FinancialApp.forms.ChangeUserData(request.POST)
+
+        if form.is_valid():
+            id = get_user_id(request)
+            password = form.data['Password']
+            email = form.data['Email']
+            name = form.data['Name']
+            surname = form.data['Surname']
+            if password != '':
+                with connection.cursor() as cursor:
+                    cursor.execute('UPDATE FinancialApp_users SET Password=%s WHERE id==%s', [password, id])
+            if email != '':
+                with connection.cursor() as cursor:
+                    cursor.execute('UPDATE FinancialApp_users SET Email=%s WHERE id==%s', [email, id])
+            if name != '':
+                with connection.cursor() as cursor:
+                    cursor.execute('UPDATE FinancialApp_users SET Name=%s WHERE id==%s', [name, id])
+            if surname != '':
+                with connection.cursor() as cursor:
+                    cursor.execute('UPDATE FinancialApp_users SET Surname=%s WHERE id==%s', [surname, id])
+            return redirect('/profile/')
+
+    form = FinancialApp.forms.ChangeUserData()
+    context['form'] = form
+
+    return render(request, 'change.html', context)
+
+
+def get_profile_data(id):
+    with connection.cursor() as cursor:
+        data = cursor.execute('SELECT * FROM FinancialApp_users WHERE id==%s', [id]).fetchone()
+    dict_data = []
+    for i in range(len(data)):
+        dict_data.append((cursor.description[i][0], data[i]))
+    return dict_data
+
+
+def profile(request):
+    if is_login(request):
+        context = {}
+        error = False
+        context['error'] = error
+
+        id = get_user_id(request)
+
+        if request.method == 'POST':
+            pass
+
+        data = get_profile_data(id)
+        context['data'] = data
+
+        return render(request, 'profile.html', context)
+    else:
+        return redirect('/')
 
 
 def diary(request):
