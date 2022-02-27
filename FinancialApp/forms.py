@@ -20,3 +20,10 @@ class Login(forms.Form):
 
 class Transaction(forms.Form):
     Amount = forms.IntegerField(label='Введите сумму')
+
+
+class ChangeUserData(forms.Form):
+    Password = forms.CharField(label='Введите новый пароль', min_length=5, widget=forms.PasswordInput, required=False)
+    Email = forms.EmailField(label='Введите новую почту', required=False)
+    Name = forms.CharField(label='Введите новое имя', required=False)
+    Surname = forms.CharField(label='Введите новую фамилию', required=False)
