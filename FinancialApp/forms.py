@@ -27,3 +27,7 @@ class ChangeUserData(forms.Form):
     Email = forms.EmailField(label='Введите новую почту', required=False)
     Name = forms.CharField(label='Введите новое имя', required=False)
     Surname = forms.CharField(label='Введите новую фамилию', required=False)
+
+
+class UserAvatar(forms.Form):
+    Avatar = forms.ImageField(label='Загрузите аватарку')

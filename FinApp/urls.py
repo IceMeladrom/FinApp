@@ -29,4 +29,4 @@ urlpatterns = [
     path('diary/', views.diary),
     path('profile/', views.profile),
     path('profile/change/', views.change_profile_data),
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
