@@ -10,7 +10,10 @@ import FinancialApp.models
 # Create your views here.
 def index(request):
     context = {}
-    context['is_login'] = is_login(request)
+    if is_login(request):
+        context['login'] = request.session['login']
+    else:
+        context['login'] = 'Anon'
     return render(request, 'index.html', context)
 
 
@@ -73,7 +76,7 @@ def profile(request):
 
         return render(request, 'profile.html', context)
     else:
-        return redirect('/')
+        return redirect('/login')
 
 
 def diary(request):
