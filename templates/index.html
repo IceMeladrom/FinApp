@@ -9,11 +9,12 @@
 </head>
 <body>
 <h1>Hello {{ login }}</h1>
-
-<a href="login/">login</a>
-<br>
-<a href="register/">register</a>
-<br>
+{% if login == "Anon" %}
+    <a href="login/">login</a>
+    <br>
+    <a href="register/">register</a>
+    <br>
+{% endif %}
 <a href="logout/">logout</a>
 <br>
 <a href="diary">diary</a>

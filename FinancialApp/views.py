@@ -105,10 +105,12 @@ def diary(request):
                 with connection.cursor() as cursor:
                     cursor.execute('UPDATE FinancialApp_users SET Amount = Amount + %s WHERE id == %s',
                                    [amount, user_id])
-
+            return redirect('/diary')
         table = get_transaction_table(user_id)
         form = FinancialApp.forms.Transaction()
         print(table)
+        context['amount'] = connection.cursor().execute('SELECT Amount FROM FinancialApp_users WHERE id == %s',
+                                                        [get_user_id(request)]).fetchone()[0]
         context['table'] = table
         context['form'] = form
         context['error'] = error
