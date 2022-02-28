@@ -1,5 +1,3 @@
-import itertools
-
 from django.db import connection
 from django.shortcuts import render, redirect
 import django.db.utils
@@ -15,6 +13,10 @@ def index(request):
     else:
         context['login'] = 'Anon'
     return render(request, 'index.html', context)
+
+
+def upload_avatar():
+    pass
 
 
 def change_profile_data(request):
@@ -69,7 +71,15 @@ def profile(request):
         id = get_user_id(request)
 
         if request.method == 'POST':
-            pass
+            form = FinancialApp.forms.UserAvatar(request.POST, request.FILES)
+            if form.is_valid():
+                user = FinancialApp.models.Users.objects.get(id=get_user_id(request))
+                user.Avatar = request.FILES['Avatar']
+                user.save()
+                return redirect('/profile/')
+
+        form = FinancialApp.forms.UserAvatar()
+        context['form'] = form
 
         data = get_profile_data(id)
         context['data'] = data
