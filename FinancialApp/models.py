@@ -10,7 +10,7 @@ class Users(models.Model):
     Amount = models.IntegerField(default=0)
     Name = models.TextField()
     Surname = models.TextField()
-    Avatar = models.ImageField(upload_to='img/', null=True)
+    Avatar = models.ImageField(upload_to='img/', null=True, default='img/Durr.png')
 
 
 class Statistics(models.Model):
