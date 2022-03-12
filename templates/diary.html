@@ -31,15 +31,16 @@
 <h2>Деняк: {{ amount }}</h2>
 <form method="POST">
     {% csrf_token %}
-    {{ form }}
+    {{ Transaction }}
     <button name="Plus">Добавить</button>
 </form>
 <form method="POST">
     {% csrf_token %}
-    {{ form }}
+    {{ Transaction }}
     <button name="Minus">Убавить</button>
 </form>
 <a href="../">Назад</a>
+
 <table class="table">
     <thead>
     <tr>

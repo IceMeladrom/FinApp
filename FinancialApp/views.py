@@ -5,14 +5,15 @@ import FinancialApp.forms
 import FinancialApp.models
 from django.utils.timezone import now
 
-import matplotlib as mpl
 import matplotlib.pyplot as plt
 import datetime as dt
+import mpld3
 
 
 # Create your views here.
 def index(request):
     context = {}
+    # create_user_statistics_graph(get_user_id(request), dt.datetime(2022, 3, 12, 12), dt.datetime(2022, 3, 12, 15))
     if is_login(request):
         context['login'] = request.session['login']
     else:
@@ -95,19 +96,21 @@ def diary(request):
         context = {}
         error = False
         user_id = get_user_id(request)
-        cur_amount = connection.cursor().execute('SELECT Amount FROM FinancialApp_users WHERE id==%s', [user_id]).fetchone()[0]
+        cur_amount = connection.cursor().execute(
+            'SELECT Amount FROM FinancialApp_users WHERE id==%s', [user_id]).fetchone()[0]
         if request.method == 'POST':
-            form = FinancialApp.forms.Transaction(request.POST)
-            if form.is_valid():
-                if 'Plus' in form.data:
-                    amount = abs(int(form.data['Amount']))
+            # Обработка транзакции
+            Transaction = FinancialApp.forms.Transaction(request.POST)
+            if Transaction.is_valid():
+                if 'Plus' in Transaction.data:
+                    amount = abs(int(Transaction.data['Amount']))
                     cur_amount += amount
                     with connection.cursor() as cursor:
                         cursor.execute(
                             'INSERT INTO FinancialApp_statistics(UserID, CurrentAmount, Amount, Category, Date) VALUES(%s, %s, %s, %s, %s)',
                             [user_id, cur_amount, amount, 'Зарплата', now()])
                 else:
-                    amount = -1 * abs(int(form.data['Amount']))
+                    amount = -1 * abs(int(Transaction.data['Amount']))
                     cur_amount += amount
                     with connection.cursor() as cursor:
                         cursor.execute(
@@ -116,12 +119,18 @@ def diary(request):
                 with connection.cursor() as cursor:
                     cursor.execute('UPDATE FinancialApp_users SET Amount = Amount + %s WHERE id == %s',
                                    [amount, user_id])
+            # Конец
+
+            # Обработка и отображение графика изменения баланса
+            # FromTo = FinancialApp.forms.StatisticsFromTo(request.POST)
+            # Конец
             return redirect('/diary')
+
         table = get_transaction_table(user_id)
-        form = FinancialApp.forms.Transaction()
+        Transaction = FinancialApp.forms.Transaction()
         context['amount'] = cur_amount
         context['table'] = table
-        context['form'] = form
+        context['Transaction'] = Transaction
         context['error'] = error
 
         return render(request, 'diary.html', context)
@@ -148,6 +157,9 @@ def create_user_statistics_graph(user_id, start, end):
         amount.append(value)
         time.append(key)
 
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+
     plt.plot(time, amount)
     plt.title('Изменение баланса')
     plt.xlabel('Время')
@@ -155,6 +167,7 @@ def create_user_statistics_graph(user_id, start, end):
 
     plt.xlim(start, end)
     plt.gcf().autofmt_xdate()
+    mpld3.save_html(fig, 'templates/temp/graph.html')
 
 
 def get_user_statistics(user_id):

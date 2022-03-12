@@ -31,3 +31,8 @@ class ChangeUserData(forms.Form):
 
 class UserAvatar(forms.Form):
     Avatar = forms.ImageField(label='Загрузите аватарку')
+
+
+class StatisticsFromTo(forms.Form):
+    From = forms.DateTimeField(label='От')
+    To = forms.DateTimeField(label='До')
