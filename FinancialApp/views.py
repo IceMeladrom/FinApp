@@ -3,11 +3,13 @@ from django.shortcuts import render, redirect
 import django.db.utils
 import FinancialApp.forms
 import FinancialApp.models
+from django.utils.timezone import now
 
 
 # Create your views here.
 def index(request):
     context = {}
+
     if is_login(request):
         context['login'] = request.session['login']
     else:
@@ -15,8 +17,13 @@ def index(request):
     return render(request, 'index.html', context)
 
 
-def upload_avatar():
-    pass
+
+
+def get_user_statistics(user_id):
+    with connection.cursor() as cursor:
+        data = cursor.execute('SELECT Amount, Category, Date FROM FinancialApp_statistics WHERE UserID==%s',
+                              [user_id]).fetchall()
+    return data
 
 
 def change_profile_data(request):
@@ -99,26 +106,23 @@ def diary(request):
             form = FinancialApp.forms.Transaction(request.POST)
             if form.is_valid():
                 if 'Plus' in form.data:
-                    print('plus')
                     amount = abs(int(form.data['Amount']))
                     with connection.cursor() as cursor:
                         cursor.execute(
-                            'INSERT INTO FinancialApp_statistics(UserID, Amount, Category) VALUES(%s, %s, %s)',
-                            [user_id, amount, 'Зарплата'])
+                            'INSERT INTO FinancialApp_statistics(UserID, Amount, Category, Date) VALUES(%s, %s, %s, %s)',
+                            [user_id, amount, 'Зарплата', now()])
                 else:
-                    print('minus')
                     amount = -1 * abs(int(form.data['Amount']))
                     with connection.cursor() as cursor:
                         cursor.execute(
-                            'INSERT INTO FinancialApp_statistics(UserID, Amount, Category) VALUES(%s, %s, %s)',
-                            [user_id, amount, 'Трата'])
+                            'INSERT INTO FinancialApp_statistics(UserID, Amount, Category, Date) VALUES(%s, %s, %s, %s)',
+                            [user_id, amount, 'Трата', now()])
                 with connection.cursor() as cursor:
                     cursor.execute('UPDATE FinancialApp_users SET Amount = Amount + %s WHERE id == %s',
                                    [amount, user_id])
             return redirect('/diary')
         table = get_transaction_table(user_id)
         form = FinancialApp.forms.Transaction()
-        print(table)
         context['amount'] = connection.cursor().execute('SELECT Amount FROM FinancialApp_users WHERE id == %s',
                                                         [get_user_id(request)]).fetchone()[0]
         context['table'] = table
