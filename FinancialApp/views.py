@@ -5,25 +5,19 @@ import FinancialApp.forms
 import FinancialApp.models
 from django.utils.timezone import now
 
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+import datetime as dt
+
 
 # Create your views here.
 def index(request):
     context = {}
-
     if is_login(request):
         context['login'] = request.session['login']
     else:
         context['login'] = 'Anon'
     return render(request, 'index.html', context)
-
-
-
-
-def get_user_statistics(user_id):
-    with connection.cursor() as cursor:
-        data = cursor.execute('SELECT Amount, Category, Date FROM FinancialApp_statistics WHERE UserID==%s',
-                              [user_id]).fetchall()
-    return data
 
 
 def change_profile_data(request):
@@ -101,30 +95,31 @@ def diary(request):
         context = {}
         error = False
         user_id = get_user_id(request)
-
+        cur_amount = connection.cursor().execute('SELECT Amount FROM FinancialApp_users WHERE id==%s', [user_id]).fetchone()[0]
         if request.method == 'POST':
             form = FinancialApp.forms.Transaction(request.POST)
             if form.is_valid():
                 if 'Plus' in form.data:
                     amount = abs(int(form.data['Amount']))
+                    cur_amount += amount
                     with connection.cursor() as cursor:
                         cursor.execute(
-                            'INSERT INTO FinancialApp_statistics(UserID, Amount, Category, Date) VALUES(%s, %s, %s, %s)',
-                            [user_id, amount, 'Зарплата', now()])
+                            'INSERT INTO FinancialApp_statistics(UserID, CurrentAmount, Amount, Category, Date) VALUES(%s, %s, %s, %s, %s)',
+                            [user_id, cur_amount, amount, 'Зарплата', now()])
                 else:
                     amount = -1 * abs(int(form.data['Amount']))
+                    cur_amount += amount
                     with connection.cursor() as cursor:
                         cursor.execute(
-                            'INSERT INTO FinancialApp_statistics(UserID, Amount, Category, Date) VALUES(%s, %s, %s, %s)',
-                            [user_id, amount, 'Трата', now()])
+                            'INSERT INTO FinancialApp_statistics(UserID, CurrentAmount, Amount, Category, Date) VALUES(%s, %s, %s, %s, %s)',
+                            [user_id, cur_amount, amount, 'Трата', now()])
                 with connection.cursor() as cursor:
                     cursor.execute('UPDATE FinancialApp_users SET Amount = Amount + %s WHERE id == %s',
                                    [amount, user_id])
             return redirect('/diary')
         table = get_transaction_table(user_id)
         form = FinancialApp.forms.Transaction()
-        context['amount'] = connection.cursor().execute('SELECT Amount FROM FinancialApp_users WHERE id == %s',
-                                                        [get_user_id(request)]).fetchone()[0]
+        context['amount'] = cur_amount
         context['table'] = table
         context['form'] = form
         context['error'] = error
@@ -132,6 +127,42 @@ def diary(request):
         return render(request, 'diary.html', context)
     else:
         return redirect('/login/')
+
+
+def beautify_user_data(amount, time):
+    new_time = {}
+    for count, value in enumerate(time):
+        new_time[dt.datetime(value.year, value.month, value.day, value.hour)] = amount[count]
+    return new_time
+
+
+def create_user_statistics_graph(user_id, start, end):
+    data = get_user_statistics(user_id)
+    amount = tuple(i[0] for i in data)
+    time = tuple(i[3] for i in data)
+
+    data = beautify_user_data(amount, time)
+    amount = []
+    time = []
+    for key, value in data.items():
+        amount.append(value)
+        time.append(key)
+
+    plt.plot(time, amount)
+    plt.title('Изменение баланса')
+    plt.xlabel('Время')
+    plt.ylabel('Деньги')
+
+    plt.xlim(start, end)
+    plt.gcf().autofmt_xdate()
+
+
+def get_user_statistics(user_id):
+    with connection.cursor() as cursor:
+        data = cursor.execute(
+            'SELECT CurrentAmount, Amount, Category, Date FROM FinancialApp_statistics WHERE UserID==%s',
+            [user_id]).fetchall()
+    return data
 
 
 def register(request):
