@@ -31,8 +31,3 @@ class ChangeUserData(forms.Form):
 
 class UserAvatar(forms.Form):
     Avatar = forms.ImageField(label='Загрузите аватарку')
-
-
-class StatisticsFromTo(forms.Form):
-    From = forms.DateTimeField(label='От', widget=forms.SelectDateWidget(years=[i for i in range(2022, dt.datetime.now().year+1)]))
-    To = forms.DateTimeField(label='До', widget=forms.SelectDateWidget(years=[i for i in range(2022, dt.datetime.now().year+1)]))
