@@ -29,4 +29,5 @@ urlpatterns = [
     path('diary/', views.diary),
     path('profile/', views.profile),
     path('profile/change/', views.change_profile_data),
+    path('table/', views.table),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

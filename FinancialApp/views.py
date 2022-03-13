@@ -217,3 +217,13 @@ def get_transaction_table(user_id):
                               [user_id]).fetchall()
 
     return data
+
+
+def table(request):
+    if is_login(request):
+        context = {}
+        error = False
+        user_id = get_user_id(request)
+        return render(request, 'table.html', context)
+    else:
+        return redirect('/login')
