@@ -95,13 +95,19 @@ def diary(request):
 
         user_id = get_user_id(request)
         with connection.cursor() as cursor:
-            transaction_dates = cursor.execute('SELECT CurrentAmount, Date FROM FinancialApp_statistics WHERE UserID==%s', [user_id]).fetchall()
+            transaction_dates = cursor.execute(
+                'SELECT CurrentAmount, Date FROM FinancialApp_statistics WHERE UserID==%s', [user_id]).fetchall()
             cur_amount = cursor.execute('SELECT Amount FROM FinancialApp_users WHERE id==%s', [user_id]).fetchone()[0]
         new_transaction_dates = []
         for i in range(len(transaction_dates)):
-            new_transaction_dates.append([transaction_dates[i][0], int(time.mktime(transaction_dates[i][1].timetuple())) * 1000])
-        first_log = new_transaction_dates[0][1]
-        last_log = new_transaction_dates[-1][1]
+            new_transaction_dates.append(
+                [transaction_dates[i][0], int(time.mktime(transaction_dates[i][1].timetuple())) * 1000])
+        try:
+            first_log = new_transaction_dates[0][1]
+            last_log = new_transaction_dates[-1][1]
+        except IndexError:
+            first_log = int(time.time())
+            last_log = int(time.time())
 
         if request.method == 'POST':
             if 'Transaction' in request.POST:
