@@ -1,5 +1,5 @@
 from django import forms
-
+import datetime as dt
 
 # Create your forms here.
 
@@ -19,7 +19,7 @@ class Login(forms.Form):
 
 
 class Transaction(forms.Form):
-    Amount = forms.IntegerField(label='Введите сумму')
+    Amount = forms.IntegerField(label='Введите сумму', required=False)
 
 
 class ChangeUserData(forms.Form):
