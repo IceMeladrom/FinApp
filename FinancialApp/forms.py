@@ -1,5 +1,5 @@
 from django import forms
-
+import datetime as dt
 
 # Create your forms here.
 
@@ -19,7 +19,7 @@ class Login(forms.Form):
 
 
 class Transaction(forms.Form):
-    Amount = forms.IntegerField(label='Введите сумму')
+    Amount = forms.IntegerField(label='Введите сумму', required=False)
 
 
 class ChangeUserData(forms.Form):
@@ -34,5 +34,5 @@ class UserAvatar(forms.Form):
 
 
 class StatisticsFromTo(forms.Form):
-    From = forms.DateTimeField(label='От')
-    To = forms.DateTimeField(label='До')
+    From = forms.DateTimeField(label='От', widget=forms.SelectDateWidget(years=[i for i in range(2022, dt.datetime.now().year+1)]))
+    To = forms.DateTimeField(label='До', widget=forms.SelectDateWidget(years=[i for i in range(2022, dt.datetime.now().year+1)]))

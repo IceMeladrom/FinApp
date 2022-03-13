@@ -1,3 +1,5 @@
+import time
+
 from django.db import connection
 from django.shortcuts import render, redirect
 import django.db.utils
@@ -5,15 +7,10 @@ import FinancialApp.forms
 import FinancialApp.models
 from django.utils.timezone import now
 
-import matplotlib.pyplot as plt
-import datetime as dt
-import mpld3
-
 
 # Create your views here.
 def index(request):
     context = {}
-    # create_user_statistics_graph(get_user_id(request), dt.datetime(2022, 3, 12, 12), dt.datetime(2022, 3, 12, 15))
     if is_login(request):
         context['login'] = request.session['login']
     else:
@@ -95,39 +92,44 @@ def diary(request):
     if is_login(request):
         context = {}
         error = False
-        user_id = get_user_id(request)
-        cur_amount = connection.cursor().execute(
-            'SELECT Amount FROM FinancialApp_users WHERE id==%s', [user_id]).fetchone()[0]
-        if request.method == 'POST':
-            # Обработка транзакции
-            Transaction = FinancialApp.forms.Transaction(request.POST)
-            if Transaction.is_valid():
-                if 'Plus' in Transaction.data:
-                    amount = abs(int(Transaction.data['Amount']))
-                    cur_amount += amount
-                    with connection.cursor() as cursor:
-                        cursor.execute(
-                            'INSERT INTO FinancialApp_statistics(UserID, CurrentAmount, Amount, Category, Date) VALUES(%s, %s, %s, %s, %s)',
-                            [user_id, cur_amount, amount, 'Зарплата', now()])
-                else:
-                    amount = -1 * abs(int(Transaction.data['Amount']))
-                    cur_amount += amount
-                    with connection.cursor() as cursor:
-                        cursor.execute(
-                            'INSERT INTO FinancialApp_statistics(UserID, CurrentAmount, Amount, Category, Date) VALUES(%s, %s, %s, %s, %s)',
-                            [user_id, cur_amount, amount, 'Трата', now()])
-                with connection.cursor() as cursor:
-                    cursor.execute('UPDATE FinancialApp_users SET Amount = Amount + %s WHERE id == %s',
-                                   [amount, user_id])
-            # Конец
 
-            # Обработка и отображение графика изменения баланса
-            # FromTo = FinancialApp.forms.StatisticsFromTo(request.POST)
-            # Конец
+        user_id = get_user_id(request)
+        with connection.cursor() as cursor:
+            transaction_dates = cursor.execute('SELECT CurrentAmount, Date FROM FinancialApp_statistics WHERE UserID==%s', [user_id]).fetchall()
+            cur_amount = cursor.execute('SELECT Amount FROM FinancialApp_users WHERE id==%s', [user_id]).fetchone()[0]
+        new_transaction_dates = []
+        for i in range(len(transaction_dates)):
+            new_transaction_dates.append([transaction_dates[i][0], int(time.mktime(transaction_dates[i][1].timetuple())) * 1000])
+        first_log = new_transaction_dates[0][1]
+        last_log = new_transaction_dates[-1][1]
+
+        if request.method == 'POST':
+            if 'Transaction' in request.POST:
+                Transaction = FinancialApp.forms.Transaction(request.POST, prefix='Transaction')
+                if Transaction.is_valid():
+                    if 'Plus' in Transaction.data:
+                        amount = abs(int(Transaction.data['Transaction-Amount']))
+                        cur_amount += amount
+                        with connection.cursor() as cursor:
+                            cursor.execute(
+                                'INSERT INTO FinancialApp_statistics(UserID, CurrentAmount, Amount, Category, Date) VALUES(%s, %s, %s, %s, %s)',
+                                [user_id, cur_amount, amount, 'Зарплата', now()])
+                    else:
+                        amount = -1 * abs(int(Transaction.data['Transaction-Amount']))
+                        cur_amount += amount
+                        with connection.cursor() as cursor:
+                            cursor.execute(
+                                'INSERT INTO FinancialApp_statistics(UserID, CurrentAmount, Amount, Category, Date) VALUES(%s, %s, %s, %s, %s)',
+                                [user_id, cur_amount, amount, 'Трата', now()])
+                    with connection.cursor() as cursor:
+                        cursor.execute('UPDATE FinancialApp_users SET Amount = Amount + %s WHERE id == %s',
+                                       [amount, user_id])
             return redirect('/diary')
 
         table = get_transaction_table(user_id)
-        Transaction = FinancialApp.forms.Transaction()
+        Transaction = FinancialApp.forms.Transaction(prefix='Transaction')
+
+        context['date'] = [first_log, last_log, new_transaction_dates]
         context['amount'] = cur_amount
         context['table'] = table
         context['Transaction'] = Transaction
@@ -136,46 +138,6 @@ def diary(request):
         return render(request, 'diary.html', context)
     else:
         return redirect('/login/')
-
-
-def beautify_user_data(amount, time):
-    new_time = {}
-    for count, value in enumerate(time):
-        new_time[dt.datetime(value.year, value.month, value.day, value.hour)] = amount[count]
-    return new_time
-
-
-def create_user_statistics_graph(user_id, start, end):
-    data = get_user_statistics(user_id)
-    amount = tuple(i[0] for i in data)
-    time = tuple(i[3] for i in data)
-
-    data = beautify_user_data(amount, time)
-    amount = []
-    time = []
-    for key, value in data.items():
-        amount.append(value)
-        time.append(key)
-
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-
-    plt.plot(time, amount)
-    plt.title('Изменение баланса')
-    plt.xlabel('Время')
-    plt.ylabel('Деньги')
-
-    plt.xlim(start, end)
-    plt.gcf().autofmt_xdate()
-    mpld3.save_html(fig, 'templates/temp/graph.html')
-
-
-def get_user_statistics(user_id):
-    with connection.cursor() as cursor:
-        data = cursor.execute(
-            'SELECT CurrentAmount, Amount, Category, Date FROM FinancialApp_statistics WHERE UserID==%s',
-            [user_id]).fetchall()
-    return data
 
 
 def register(request):
@@ -261,7 +223,7 @@ def get_user_id(request):
 
 def get_transaction_table(user_id):
     with connection.cursor() as cursor:
-        data = cursor.execute('SELECT Amount, Category FROM FinancialApp_statistics WHERE UserID == %s',
+        data = cursor.execute('SELECT Amount, Category, Date FROM FinancialApp_statistics WHERE UserID == %s',
                               [user_id]).fetchall()
 
     return data

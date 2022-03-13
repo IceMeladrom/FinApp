@@ -5,6 +5,10 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"
+            integrity="sha512-QSkVNOCYLtj73J4hbmVoOV6KVZuMluZlioC+trLpewV8qMjsWqlIQvkn1KGX2StWvPMdWGBqim1xlC8krl1EKQ=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    {% load static %}
     <title>Document</title>
 </head>
 <style>
@@ -27,24 +31,26 @@
         padding: 5px;
     }
 </style>
+
 <body>
-<h2>Деняк: {{ amount }}</h2>
+
+<h2>Денег: {{ amount }}</h2>
+
 <form method="POST">
     {% csrf_token %}
     {{ Transaction }}
+    <input type="text" name="{{ Transaction.prefix }}" hidden>
     <button name="Plus">Добавить</button>
-</form>
-<form method="POST">
-    {% csrf_token %}
-    {{ Transaction }}
     <button name="Minus">Убавить</button>
 </form>
 <a href="../">Назад</a>
+<canvas id="myChart" height="200" width="500"></canvas>
 
 <table class="table">
     <thead>
     <tr>
-        <th>Операция</th>
+        <th>Транзакция</th>
+        <th>Дата</th>
     </tr>
     </thead>
     <tbody>
@@ -55,9 +61,18 @@
             {% else %}
                 <td style="color: darkred">{{ i.0 }}$</td>
             {% endif %}
+            <td>{{ i.2 }}</td>
         </tr>
     {% endfor %}
     </tbody>
 </table>
+
+<script>
+    var first_log = {{ date.0 }};
+    var last_log = {{ date.1 }};
+    var transaction_dates = {{ date.2 }};
+</script>
+<script src="{% static 'js/mychart.js' %}"></script>
+
 </body>
 </html>
