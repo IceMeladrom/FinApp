@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport"
+ content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+ <meta http-equiv="X-UA-Compatible" content="ie=edge">
+ <title>Profile</title>
+</head>
+<body>
+{% for i in data %}
+ <div>{{ i.0 }}: {{ i.1 }}</div>
+{% endfor %}
+<dl>
+ <dt>Советы:</dt>
+  <dd>Ведите бюджет ежедневно.</dd>
+  <dd>Сберегайте часть доходов сразу при их получении.</dd>
+  <dd>Формируйте неприкосновенный запас средств.</dd>
+  <dd>Не стоит отказываться от запланированных трат.</dd>
+ <dt>Цели:</dt>
+  <dd>Закрыть кредитную карту..</dd>
+  <dd>Сделать ремонт, купить бытовую технику или электронику.</dd>
+  <dd>Порадовать себя чем-то приятным.</dd>
+  <dd>Сформировать подушку безопасности.</dd>
+  <dd>Начать копить на будущую пенсию.</dd>
+</dl>
+<br>
+<a href="../">Назад</a>
+</body>
+</html>
