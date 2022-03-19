@@ -223,7 +223,10 @@ def table(request):
     if is_login(request):
         context = {}
         error = False
-        user_id = get_user_id(request)
+        id = get_user_id(request)
+        with connection.cursor() as cursor:
+            amount = cursor.execute('SELECT Amount FROM FinancialApp_statistics WHERE UserID == %s', [id]).fetchone()[0]
+        context['amount'] = amount
         return render(request, 'table.html', context)
     else:
         return redirect('/login')
