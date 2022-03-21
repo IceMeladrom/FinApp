@@ -227,6 +227,7 @@ def table(request):
         with connection.cursor() as cursor:
             amount = cursor.execute('SELECT Amount FROM FinancialApp_users WHERE id == %s', [id]).fetchone()[0]
         context['amount'] = amount
+
         return render(request, 'table.html', context)
     else:
         return redirect('/login')
