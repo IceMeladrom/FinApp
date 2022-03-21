@@ -225,7 +225,7 @@ def table(request):
         error = False
         id = get_user_id(request)
         with connection.cursor() as cursor:
-            amount = cursor.execute('SELECT Amount FROM FinancialApp_statistics WHERE UserID == %s', [id]).fetchone()[0]
+            amount = cursor.execute('SELECT Amount FROM FinancialApp_users WHERE id == %s', [id]).fetchone()[0]
         context['amount'] = amount
         return render(request, 'table.html', context)
     else:
