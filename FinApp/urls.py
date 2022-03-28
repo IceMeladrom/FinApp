@@ -30,4 +30,8 @@ urlpatterns = [
     path('profile/', views.profile),
     path('profile/change/', views.change_profile_data),
     path('table/', views.table),
+    path('textbook/', views.textbook),
+    path('textbook/create/', views.create_article),
+    path('textbook/read/<articleID>/', views.read_article),
+    path('textbook/exam/<articleID>/', views.pass_exam),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -245,4 +245,66 @@ def table(request):
         context['amount'] = amount
         return render(request, 'table.html', context)
     else:
-        return redirect('/login')
+        return redirect('/login/')
+
+
+def textbook(request):
+    context = {}
+    articles = connection.cursor().execute('SELECT * FROM FinancialApp_Articles').fetchall()
+    context['articles'] = articles
+    return render(request, 'textbook.html', context)
+
+
+def create_article(request):
+    context = {}
+    if request.method == 'POST':
+        form = FinancialApp.forms.Article(request.POST)
+        if form.is_valid():
+            user = FinancialApp.models.Users.objects.get(Login=request.session['login'])
+
+            name = form.data['Name']
+            text = form.data['Text']
+            author = user.Name + ' ' + user.Surname
+            authorID = user.id
+            created = now()
+            lastupdate = now()
+
+            data = FinancialApp.models.Articles(Name=name, Text=text, Author=author, AuthorID=authorID, Created=created,
+                                                LastUpdate=lastupdate)
+            data.save()
+            return redirect('/textbook/')
+    context['form'] = FinancialApp.forms.Article
+    return render(request, 'create_article.html', context)
+
+
+def read_article(request, articleID):
+    context = {}
+    data = FinancialApp.models.Articles.objects.get(id=articleID)
+    if FinancialApp.models.PassedExams.objects.filter(UserID=get_user_id(request),
+                                                      ArticleID=data.id - 1).exists() or data.id == 1:
+        article = [
+            data.Name,
+            data.Text,
+            data.Author,
+            data.Created,
+            data.LastUpdate,
+            data.Visits,
+            data.Likes,
+            data.Dislikes,
+            data.id,
+        ]
+
+        context['article'] = article
+        return render(request, 'read_article.html', context)
+    else:
+        return redirect('/textbook/')
+
+
+def pass_exam(request, articleID):
+    context = {}
+    data = FinancialApp.models.Exams.objects.filter(ArticleID=articleID).all()
+    questions = []
+    for i in data:
+        questions.append([i.Name, i.Question])
+    context['questions'] = questions
+    return render(request, 'exam.html', context)
