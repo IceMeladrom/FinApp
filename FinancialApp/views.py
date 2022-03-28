@@ -302,8 +302,9 @@ def read_article(request, articleID):
 
 def pass_exam(request, articleID):
     data = FinancialApp.models.Articles.objects.get(id=articleID)
-    if FinancialApp.models.PassedExams.objects.filter(UserID=get_user_id(request),
-                                                      ArticleID=data.id - 1).exists() or data.id == 1:
+    user_id = get_user_id(request)
+    if (FinancialApp.models.PassedExams.objects.filter(UserID=user_id, ArticleID=data.id - 1).exists() or data.id == 1) \
+            and not FinancialApp.models.PassedExams.objects.filter(UserID=user_id, ArticleID=data.id).exists():
         context = {}
         if request.method == 'POST':
             with connection.cursor() as cursor:
@@ -316,7 +317,7 @@ def pass_exam(request, articleID):
                 if answers[correct_answers[i][0]] == correct_answers[i][1]:
                     score += 1
             if score == len(correct_answers):
-                data = FinancialApp.models.PassedExams(UserID=get_user_id(request), ArticleID=articleID)
+                data = FinancialApp.models.PassedExams(UserID=user_id, ArticleID=articleID)
                 data.save()
                 return redirect('/textbook/')
 
@@ -330,4 +331,4 @@ def pass_exam(request, articleID):
         context['questions'] = questions
         return render(request, 'exam.html', context)
     else:
-        return redirect(f'/textbook/exam/{str(int(articleID) - 1)}')
+        return redirect('/textbook/')
