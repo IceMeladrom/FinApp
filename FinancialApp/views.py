@@ -301,10 +301,33 @@ def read_article(request, articleID):
 
 
 def pass_exam(request, articleID):
-    context = {}
-    data = FinancialApp.models.Exams.objects.filter(ArticleID=articleID).all()
-    questions = []
-    for i in data:
-        questions.append([i.Name, i.Question])
-    context['questions'] = questions
-    return render(request, 'exam.html', context)
+    data = FinancialApp.models.Articles.objects.get(id=articleID)
+    if FinancialApp.models.PassedExams.objects.filter(UserID=get_user_id(request),
+                                                      ArticleID=data.id - 1).exists() or data.id == 1:
+        context = {}
+        if request.method == 'POST':
+            with connection.cursor() as cursor:
+                correct_answers = cursor.execute(
+                    'SELECT Question, CorrectAnswer FROM FinancialApp_exams WHERE ArticleID==%s',
+                    [articleID]).fetchall()
+            answers = dict(list(request.POST.items())[1:])
+            score = 0
+            for i in range(len(correct_answers)):
+                if answers[correct_answers[i][0]] == correct_answers[i][1]:
+                    score += 1
+            if score == len(correct_answers):
+                data = FinancialApp.models.PassedExams(UserID=get_user_id(request), ArticleID=articleID)
+                data.save()
+                return redirect('/textbook/')
+
+        data = FinancialApp.models.Exams.objects.filter(ArticleID=articleID).all()
+        questions = []
+        for i in data:
+            questions.append([
+                i.Question,
+                [[i.Question, j] for j in i.Answers.split(';;')]
+            ])
+        context['questions'] = questions
+        return render(request, 'exam.html', context)
+    else:
+        return redirect(f'/textbook/exam/{str(int(articleID) - 1)}')

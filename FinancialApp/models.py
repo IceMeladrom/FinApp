@@ -36,8 +36,9 @@ class Articles(models.Model):
 
 class Exams(models.Model):
     ArticleID = models.IntegerField()
-    Name = models.TextField()
     Question = models.TextField()
+    Answers = models.TextField()
+    CorrectAnswer = models.TextField()
 
 
 class PassedExams(models.Model):

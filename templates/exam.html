@@ -8,6 +8,22 @@
     <title>Document</title>
 </head>
 <body>
-{{ questions }}
+<a href="../..">Вернуться к статьям</a>
+<form method="POST">
+    {% csrf_token %}
+    {% for question in questions %}
+        <div>
+            <p>{{ question.0 }}</p>
+            <div>
+                {% for i in question.1 %}
+                    <input type="radio" id="{{ i.0 }}" name="{{ i.0 }}" value="{{ i.1 }}" required>
+                    <label for="{{ i.1 }}">{{ i.1 }}</label>
+                    <br>
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+    <button>Отправить</button>
+</form>
 </body>
 </html>
