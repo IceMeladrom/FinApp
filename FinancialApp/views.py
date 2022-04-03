@@ -250,16 +250,3 @@ def table(request):
         return render(request, 'table.html', context)
     else:
         return redirect('/login')
-
-
-def get_cost_category(request):
-    if is_login(request):
-        context = {}
-        error = False
-        id = get_user_id(request)
-        with connection.cursor() as cursor:
-            costcategory = cursor.execute('SELECT CostCategory FROM FinancialApp_statistics WHERE id == %s', [id]).fetchone()[0]
-        context['costcategory'] = costcategory
-        return render(request, 'diery.html', context)
-    else:
-        return redirect('/login')
