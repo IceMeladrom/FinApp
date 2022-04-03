@@ -40,6 +40,8 @@
     {% csrf_token %}
     {{ Transaction }}
     <input type="text" name="{{ Transaction.prefix }}" hidden>
+    {{ CostCategory }}
+    <input type="text" name="{{ CostCategory.prefix }}" hidden>
     <button name="Plus">Добавить</button>
     <button name="Minus">Убавить</button>
 </form>
@@ -51,6 +53,7 @@
     <tr>
         <th>Транзакция</th>
         <th>Дата</th>
+        <th>Категория</th>
     </tr>
     </thead>
     <tbody>
@@ -62,6 +65,7 @@
                 <td style="color: darkred">{{ i.0 }}$</td>
             {% endif %}
             <td>{{ i.2 }}</td>
+            <td>{{ i.3 }}</td>
         </tr>
     {% endfor %}
     </tbody>

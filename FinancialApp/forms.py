@@ -22,6 +22,10 @@ class Transaction(forms.Form):
     Amount = forms.IntegerField(label='Введите сумму', required=False)
 
 
+class CostCategory(forms.Form):
+    Category = forms.CharField(label='Введите категорию', required=False)
+
+
 class ChangeUserData(forms.Form):
     Password = forms.CharField(label='Введите новый пароль', min_length=5, widget=forms.PasswordInput, required=False)
     Email = forms.EmailField(label='Введите новую почту', required=False)
