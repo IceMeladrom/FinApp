@@ -23,12 +23,12 @@ class Statistics(models.Model):
 
 
 class Articles(models.Model):
-    Name = models.TextField(unique=True)
-    Text = models.TextField()
+    Name = models.TextField(editable=True, unique=True)
+    Text = models.TextField(editable=True)
     Author = models.TextField()
     AuthorID = models.TextField()
     Created = models.DateTimeField(default=now)
-    LastUpdate = models.DateTimeField(default=now)
+    LastUpdate = models.DateTimeField(editable=True)
     Visits = models.IntegerField(default=0)
     Likes = models.IntegerField(default=0)
     Dislikes = models.IntegerField(default=0)

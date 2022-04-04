@@ -9,6 +9,12 @@
 </head>
 <body>
 <a href="../..">Вернуться назад</a>
+{% if article.9 == user or user == '1' %}
+    <div>
+        <a href="edit/">Редактировать статью</a>
+        <a href="/textbook/exam/{{ article.8 }}/edit/">Редактировать экзамен</a>
+    </div>
+{% endif %}
 <h2>{{ article.0 }}</h2>
 <h5>
     <div>Посещений: {{ article.5 }}</div>

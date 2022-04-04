@@ -34,4 +34,6 @@ urlpatterns = [
     path('textbook/create/', views.create_article),
     path('textbook/read/<articleID>/', views.read_article),
     path('textbook/exam/<articleID>/', views.pass_exam),
+    path('textbook/read/<articleID>/edit/', views.edit_article),
+    path('textbook/exam/<articleID>/edit/', views.edit_exam),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
