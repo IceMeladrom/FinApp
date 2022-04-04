@@ -302,6 +302,26 @@ def create_article(request):
 def read_article(request, articleID):
     if is_login(request):
         context = {}
+        if request.method == 'POST':
+            if (not FinancialApp.models.ArticlesLikes.objects.filter(UserID=get_user_id(request), ArticleID=articleID,
+                                                                     Like=True).exists()) and (
+                    not FinancialApp.models.ArticlesLikes.objects.filter(UserID=get_user_id(request),
+                                                                         ArticleID=articleID,
+                                                                         Like=False).exists()):
+                if 'like' in request.POST:
+                    data1 = FinancialApp.models.ArticlesLikes(UserID=get_user_id(request), ArticleID=articleID,
+                                                              Like=True)
+                    data2 = FinancialApp.models.Articles.objects.get(id=articleID)
+                    data2.Likes += 1
+                    data2.save()
+                else:
+                    data1 = FinancialApp.models.ArticlesLikes(UserID=get_user_id(request), ArticleID=articleID,
+                                                              Like=False)
+                    data2 = FinancialApp.models.Articles.objects.get(id=articleID)
+                    data2.Dislikes += 1
+                    data2.save()
+                data1.save()
+
         data = FinancialApp.models.Articles.objects.get(id=articleID)
         if FinancialApp.models.PassedExams.objects.filter(UserID=get_user_id(request),
                                                           ArticleID=data.id - 1).exists() or data.id == 1:
@@ -455,7 +475,7 @@ def exam_data_processing(data):
                 pass
             correct_answer = data[f'correct_answer_{cur_question}'][0]
             if correct_answer not in answers:
-                return HttpResponse('Неправильно введённый ответ на вопрос', status=400)
+                return HttpResponse('Неправильно введён ответ на вопрос', status=400)
             qac.append((question, tuple(answers), correct_answer))
             cur_question += 1
     except KeyError:

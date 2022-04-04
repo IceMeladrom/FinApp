@@ -22,11 +22,17 @@
     <div>Дизлайков: {{ article.7 }}</div>
 </h5>
 <section>{{ article.1 }}</section>
-<h4>
-    <div>Написал: {{ article.2 }}</div>
-    <div>Создано: {{ article.3 }}</div>
-    <div>Обновлено: {{ article.4 }}</div>
-</h4>
+<p>
+    <address rel="author">Написал: {{ article.2 }}</address>
+    <time>Создано: {{ article.3 }}</time>
+    <time>Обновлено: {{ article.4 }}</time>
+</p>
+<form method="POST">
+    {% csrf_token %}
+    <p>Понравилась статья?</p>
+    <button name="like">Like</button>
+    <button name="dislike">Dislike</button>
+</form>
 <a href="/textbook/exam/{{ article.8 }}">Пройти экзамен</a>
 </body>
 </html>
