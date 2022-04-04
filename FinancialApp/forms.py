@@ -36,4 +36,5 @@ class UserAvatar(forms.Form):
 class Article(forms.Form):
     Name = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Название статьи'}))
     Text = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'Текст статьи'}))
+
     

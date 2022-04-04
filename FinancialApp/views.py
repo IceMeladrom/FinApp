@@ -1,6 +1,7 @@
 import time
 
 from django.db import connection
+from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect
 import django.db.utils
 import FinancialApp.forms
@@ -258,7 +259,31 @@ def textbook(request):
 def create_article(request):
     context = {}
     if request.method == 'POST':
+        data = dict(request.POST)
+        print(dict(request.POST))
+
         form = FinancialApp.forms.Article(request.POST)
+
+        qac = []
+        cur_question = 1
+        try:
+            while True:
+                question = data[f'question_{cur_question}'][0]
+                cur_answer = 1
+                answers = set()
+                try:
+                    while True:
+                        answers.add(data[f'answer_{cur_question}_{cur_answer}'][0])
+                        cur_answer += 1
+                except KeyError:
+                    pass
+                correct_answer = data[f'correct_answer_{cur_question}'][0]
+                if correct_answer not in answers:
+                    return HttpResponse('Неправильно введённый ответ на вопрос', status=400)
+                qac.append((question, tuple(answers), correct_answer))
+                cur_question += 1
+        except KeyError:
+            pass
         if form.is_valid():
             user = FinancialApp.models.Users.objects.get(Login=request.session['login'])
 
@@ -268,11 +293,21 @@ def create_article(request):
             authorID = user.id
             created = now()
             lastupdate = now()
-
             data = FinancialApp.models.Articles(Name=name, Text=text, Author=author, AuthorID=authorID, Created=created,
                                                 LastUpdate=lastupdate)
             data.save()
-            return redirect('/textbook/')
+
+            ArticleID = int(connection.cursor().execute('SELECT MAX(id) FROM FinancialApp_articles').fetchone()[0])
+            for i in qac:
+                Question = i[0]
+                Answers = ';;'.join(i[1])
+                CorrectAnswer = i[2]
+                data = FinancialApp.models.Exams(ArticleID=ArticleID, Question=Question, Answers=Answers,
+                                                 CorrectAnswer=CorrectAnswer)
+                data.save()
+
+        return redirect('/textbook/')
+
     context['form'] = FinancialApp.forms.Article
     return render(request, 'create_article.html', context)
 
