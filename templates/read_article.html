@@ -16,16 +16,14 @@
     </div>
 {% endif %}
 <h2>{{ article.0 }}</h2>
-<h5>
-    <div>Посещений: {{ article.5 }}</div>
-    <div>Лайков: {{ article.6 }}</div>
-    <div>Дизлайков: {{ article.7 }}</div>
-</h5>
+<p>
+<div>Посещений: {{ article.5 }} Лайков: {{ article.6 }} Дизлайков: {{ article.7 }}</div>
+</p>
 <section>{{ article.1 }}</section>
 <p>
-    <address rel="author">Написал: {{ article.2 }}</address>
-    <time>Создано: {{ article.3 }}</time>
-    <time>Обновлено: {{ article.4 }}</time>
+<address rel="author">Написал: {{ article.2 }}</address>
+<time>Создано: {{ article.3 }}</time>
+<time>Обновлено: {{ article.4 }}</time>
 </p>
 <form method="POST">
     {% csrf_token %}
