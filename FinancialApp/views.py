@@ -234,7 +234,7 @@ def get_user_id(request):
 
 def get_transaction_table(user_id):
     with connection.cursor() as cursor:
-        data = cursor.execute('SELECT Amount, Category, Date, CostCategory FROM FinancialApp_statistics WHERE UserID == %s',
+        data = cursor.execute('SELECT Amount, Category, Date, CostCategory FROM FinancialApp_statistics WHERE UserID == %s ORDER BY id DESC',
                               [user_id]).fetchall()
 
     return data
