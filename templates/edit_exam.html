@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    {% load static %}
+    <title>Document</title>
+</head>
+<body>
+<a href="/textbook/">Вернуться</a>
+<form method="POST">
+    {% csrf_token %}
+    <div>
+        <div>
+            <ol id="questions">
+                {% for i in data %}
+                    <li>
+                        <h5>Вопрос №{{ i.0 }}</h5>
+                        <input type="text" placeholder="Ваш вопрос" value="{{ i.1 }}" name="question_{{ i.0 }}"
+                               required>
+                        <div>
+                            <ol name="answers_{{ i.0 }}">
+                                {% for j in i.2 %}
+                                    <li><input type="text" placeholder="Вариант ответа" value="{{ j.1 }}"
+                                               name="answer_{{ i.0 }}_{{ j.0 }}" required></li>
+                                {% endfor %}
+                            </ol>
+                            <input type="button"
+                                   onclick="add_answer(this.parentElement.firstElementChild.childElementCount+1, Number(this.parentElement.parentElement.children[0].textContent.split('№')[1]), this.parentElement.firstElementChild)"
+                                   value="Добавить вариант ответа">
+                            <input type="button" onclick="remove_answer(this.parentElement.firstElementChild)"
+                                   value="Удалить вариант ответа">
+                        </div>
+                        <input type="text" placeholder="Правильный ответ" value="{{ i.3 }}"
+                               name="correct_answer_{{ i.0 }}" required>
+                    </li>
+                {% endfor %}
+            </ol>
+        </div>
+        <input type="button" onclick="add_question(this.parentElement.children[0].firstElementChild.childElementCount)"
+               value="Добавить новый вопрос">
+        <input type="button"
+               onclick="remove_question(this.parentElement.children[0].firstElementChild.lastElementChild)"
+               value="Удалить вопрос">
+    </div>
+    <input type="submit" value="Изменить">
+</form>
+<script src="{% static 'js/create_exam.js' %}"></script>
+</body>
+</html>

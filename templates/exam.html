@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<a href="../..">Вернуться к статьям</a>
+<form method="POST">
+    {% csrf_token %}
+    {% for question in questions %}
+        <div>
+            <p>{{ question.0 }}</p>
+            <div>
+                {% for i in question.1 %}
+                    <input type="radio" id="{{ i.0 }}" name="{{ i.0 }}" value="{{ i.1 }}" required>
+                    <label for="{{ i.1 }}">{{ i.1 }}</label>
+                    <br>
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+    <button>Отправить</button>
+</form>
+</body>
+</html>

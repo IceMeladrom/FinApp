@@ -35,3 +35,10 @@ class ChangeUserData(forms.Form):
 
 class UserAvatar(forms.Form):
     Avatar = forms.ImageField(label='Загрузите аватарку')
+
+
+class Article(forms.Form):
+    Name = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Название статьи'}))
+    Text = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'Текст статьи'}))
+
+    

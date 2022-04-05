@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<a href="../..">Вернуться назад</a>
+{% if article.9 == user or user == '1' %}
+    <div>
+        <a href="edit/">Редактировать статью</a>
+        <a href="/textbook/exam/{{ article.8 }}/edit/">Редактировать экзамен</a>
+    </div>
+{% endif %}
+<h2>{{ article.0 }}</h2>
+<p>
+<div>Посещений: {{ article.5 }} Лайков: {{ article.6 }} Дизлайков: {{ article.7 }}</div>
+</p>
+<section>{{ article.1 }}</section>
+<p>
+<address rel="author">Написал: {{ article.2 }}</address>
+<time>Создано: {{ article.3 }}</time>
+<time>Обновлено: {{ article.4 }}</time>
+</p>
+<form method="POST">
+    {% csrf_token %}
+    <p>Понравилась статья?</p>
+    <button name="like">Like</button>
+    <button name="dislike">Dislike</button>
+</form>
+<a href="/textbook/exam/{{ article.8 }}">Пройти экзамен</a>
+</body>
+</html>
