@@ -20,7 +20,7 @@
                     {% if i.0 == True %}
                         <input type="checkbox" id="answer_{{ i.1 }}_{{ j.0 }}" name="{{ i.2 }}" value="{{ j.1 }}">
                     {% else %}
-                        <input type="radio" id="answer_{{ i.1 }}_{{ j.0 }}" name="{{ i.2 }}" value="{{ j.1 }}">
+                        <input type="radio" id="answer_{{ i.1 }}_{{ j.0 }}" name="{{ i.2 }}" value="{{ j.1 }}" required>
                     {% endif %}
                     <label for="answer_{{ i.1 }}_{{ j.0 }}">{{ j.1 }}</label>
                     <br>

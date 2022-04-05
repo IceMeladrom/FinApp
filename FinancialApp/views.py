@@ -397,8 +397,11 @@ def pass_exam(request, articleID):
                 user_answers = dict(request.POST)
                 score = 0
                 for i in correct_answers:
-                    if sorted(correct_answers[i]) == sorted(user_answers[i]):
-                        score += 1
+                    try:
+                        if sorted(correct_answers[i]) == sorted(user_answers[i]):
+                            score += 1
+                    except KeyError:
+                        return HttpResponse('Выбраны ответы не на все вопросы', status=400)
                 if score >= math.ceil(len(correct_answers) / 2):
                     data = FinancialApp.models.PassedExams(UserID=user_id, ArticleID=articleID, Result=score,
                                                            MaxResult=len(correct_answers), Passed=True)
