@@ -44,6 +44,9 @@ class Exams(models.Model):
 class PassedExams(models.Model):
     UserID = models.IntegerField()
     ArticleID = models.IntegerField()
+    Result = models.IntegerField()
+    MaxResult = models.IntegerField()
+    Passed = models.BooleanField()
 
 
 class ArticlesLikes(models.Model):

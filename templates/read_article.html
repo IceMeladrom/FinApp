@@ -31,6 +31,15 @@
     <button name="like">Like</button>
     <button name="dislike">Dislike</button>
 </form>
+<div>
+    <p>Предыдущая попытка: {{ LastScore }}/{{ MaxResult }} баллов</p>
+    <p>Лучшая попытка: {{ MaxScore }}/{{ MaxResult }} баллов</p>
+    {% if Passed %}
+        <p style="color: green">Тест успешно сдан</p>
+    {% else %}
+        <p style="color: red">Тест не пройден</p>
+    {% endif %}
+</div>
 <a href="/textbook/exam/{{ article.8 }}">Пройти экзамен</a>
 </body>
 </html>
