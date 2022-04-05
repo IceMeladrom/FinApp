@@ -301,6 +301,10 @@ def create_article(request):
 
 def read_article(request, articleID):
     if is_login(request):
+        try:
+            articleID = int(articleID)
+        except ValueError:
+            raise Http404
         context = {}
         if request.method == 'POST':
             if (not FinancialApp.models.ArticlesLikes.objects.filter(UserID=get_user_id(request), ArticleID=articleID,
@@ -349,6 +353,10 @@ def read_article(request, articleID):
 
 def pass_exam(request, articleID):
     if is_login(request):
+        try:
+            articleID = int(articleID)
+        except ValueError:
+            raise Http404
         data = FinancialApp.models.Articles.objects.get(id=articleID)
         user_id = get_user_id(request)
         if (FinancialApp.models.PassedExams.objects.filter(UserID=user_id,
