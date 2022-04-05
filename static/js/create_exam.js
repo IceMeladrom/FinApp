@@ -45,19 +45,24 @@ function add_question(num_of_questions) {
         li.appendChild(question);
         let div = document.createElement('div');
         let ol = document.createElement('ol');
-        setAttributes(ol, {name: `answers_${questions.childElementCount + 1}`});
+        setAttributes(ol, {
+            name: `answers_${questions.childElementCount + 1}`,
+            id: `answers_${questions.childElementCount + 1}`
+        });
         for (let i = 0; i < 2; i++)
             add_answer(ol.childElementCount + 1, questions.childElementCount + 1, ol);
         let input_new_ans = document.createElement('input');
         setAttributes(input_new_ans, {
             type: 'button',
-            onclick: 'add_answer(this.parentElement.firstElementChild.childElementCount+1, Number(this.parentElement.parentElement.children[0].textContent.split(\'№\')[1]), this.parentElement.firstElementChild)',
+            name: `${questions.childElementCount + 1}`,
+            onclick: `add_answer(document.getElementById('answers_${questions.childElementCount + 1}').childElementCount+1, ${questions.childElementCount + 1}, document.getElementById('answers_${questions.childElementCount + 1}'))`,
             value: 'Добавить вариант ответа',
         });
         let input_del_ans = document.createElement('input');
         setAttributes(input_del_ans, {
             type: 'button',
-            onclick: 'remove_answer(this.parentElement.firstElementChild)',
+            name: `${questions.childElementCount + 1}`,
+            onclick: `remove_answer(document.getElementById('answers_${questions.childElementCount + 1}'))`,
             value: 'Удалить вариант ответа',
         });
         div.appendChild(ol);

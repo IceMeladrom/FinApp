@@ -24,14 +24,14 @@
                     <h5>Вопрос №1</h5>
                     <input type="text" placeholder="Ваш вопрос" name="question_1" required>
                     <div>
-                        <ol name="answers_1">
+                        <ol name="answers_1" id="answers_1">
                             <li><input type="text" placeholder="Вариант ответа" name="answer_1_1" required></li>
                             <li><input type="text" placeholder="Вариант ответа" name="answer_1_2" required></li>
                         </ol>
                         <input type="button"
-                               onclick="add_answer(this.parentElement.firstElementChild.childElementCount+1, Number(this.parentElement.parentElement.children[0].textContent.split('№')[1]), this.parentElement.firstElementChild)"
+                               onclick="add_answer(document.getElementById('answers_1').childElementCount+1, 1, document.getElementById('answers_1'))"
                                value="Добавить вариант ответа">
-                        <input type="button" onclick="remove_answer(this.parentElement.firstElementChild)"
+                        <input type="button" onclick="remove_answer(document.getElementById('answers_1'))"
                                value="Удалить вариант ответа">
                     </div>
                     <input type="text" placeholder="Правильный ответ" name="correct_answer_1" required>
@@ -39,10 +39,10 @@
                 </li>
             </ol>
         </div>
-        <input type="button" onclick="add_question(this.parentElement.children[1].firstElementChild.childElementCount)"
+        <input type="button" onclick="add_question(document.getElementById('questions').childElementCount)"
                value="Добавить новый вопрос">
         <input type="button"
-               onclick="remove_question(this.parentElement.children[1].firstElementChild.lastElementChild)"
+               onclick="remove_question(document.getElementById('questions').lastElementChild)"
                value="Удалить вопрос">
     </div>
     <input type="submit" value="Отправить">
