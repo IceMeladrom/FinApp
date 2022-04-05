@@ -353,10 +353,11 @@ def read_article(request, articleID):
                         LastScore = cursor.execute(
                             'SELECT Result FROM FinancialApp_passedexams WHERE UserID==%s AND ArticleID==%s ORDER BY id DESC LIMIT 1',
                             [get_user_id(request), articleID]).fetchone()[0]
-                        MaxScore, Passed, MaxResult = cursor.execute('SELECT Max(Result), Passed, MaxResult FROM FinancialApp_passedexams WHERE UserID==%s AND ArticleID==%s',
+                        MaxScore, Passed = cursor.execute('SELECT Max(Result), Passed FROM FinancialApp_passedexams WHERE UserID==%s AND ArticleID==%s',
                                        [get_user_id(request), articleID]).fetchone()
                     except TypeError:
-                        LastScore, MaxScore, Passed, MaxResult = 0, 0, False, len(cursor.execute('SELECT CorrectAnswer FROM FinancialApp_exams WHERE ArticleID==%s', [articleID]).fetchall())
+                        LastScore, MaxScore, Passed = 0, 0, False
+                    MaxResult = len(cursor.execute('SELECT CorrectAnswer FROM FinancialApp_exams WHERE ArticleID==%s', [articleID]).fetchall())
                 context['article'] = article
                 context['user'] = str(get_user_id(request))
                 context['LastScore'] = LastScore
