@@ -7,6 +7,7 @@ import django.db.utils
 import FinancialApp.forms
 import FinancialApp.models
 from django.utils.timezone import now
+import math
 
 
 # Create your views here.
@@ -234,8 +235,9 @@ def get_user_id(request):
 
 def get_transaction_table(user_id):
     with connection.cursor() as cursor:
-        data = cursor.execute('SELECT Amount, Category, Date, CostCategory FROM FinancialApp_statistics WHERE UserID == %s ORDER BY id DESC',
-                              [user_id]).fetchall()
+        data = cursor.execute(
+            'SELECT Amount, Category, Date, CostCategory FROM FinancialApp_statistics WHERE UserID == %s ORDER BY id DESC',
+            [user_id]).fetchall()
 
     return data
 
@@ -270,8 +272,6 @@ def create_article(request):
             data = dict(request.POST)
 
             form = FinancialApp.forms.Article(request.POST)
-
-            qac = exam_data_processing(data)
             if form.is_valid():
                 user = FinancialApp.models.Users.objects.get(Login=request.session['login'])
 
@@ -281,18 +281,19 @@ def create_article(request):
                 authorID = user.id
                 created = now()
                 lastupdate = now()
-                data = FinancialApp.models.Articles(Name=name, Text=text, Author=author, AuthorID=authorID,
-                                                    Created=created,
-                                                    LastUpdate=lastupdate)
-                data.save()
+                data1 = FinancialApp.models.Articles(Name=name, Text=text, Author=author, AuthorID=authorID,
+                                                     Created=created,
+                                                     LastUpdate=lastupdate)
+                data1.save()
 
                 ArticleID = int(connection.cursor().execute('SELECT MAX(id) FROM FinancialApp_articles').fetchone()[0])
+                qac = exam_data_processing(data)
                 for i in qac:
                     Question = i[0]
                     Answers = ';;'.join(i[1])
-                    CorrectAnswer = i[2]
+                    CorrectAnswers = ';;'.join(i[2])
                     data = FinancialApp.models.Exams(ArticleID=ArticleID, Question=Question, Answers=Answers,
-                                                     CorrectAnswer=CorrectAnswer)
+                                                     CorrectAnswer=CorrectAnswers)
                     data.save()
 
             return redirect('/textbook/')
@@ -329,28 +330,45 @@ def read_article(request, articleID):
                     data2.Dislikes += 1
                     data2.save()
                 data1.save()
+        if FinancialApp.models.Articles.objects.filter(id=articleID).exists():
+            data = FinancialApp.models.Articles.objects.get(id=articleID)
+            if FinancialApp.models.PassedExams.objects.filter(
+                    UserID=get_user_id(request), ArticleID=data.id - 1,
+                    Passed=True).exists() or data.id == 1 or get_user_id(request) == 1  :
+                article = [
+                    data.Name,
+                    data.Text,
+                    data.Author,
+                    data.Created,
+                    data.LastUpdate,
+                    data.Visits,
+                    data.Likes,
+                    data.Dislikes,
+                    data.id,
+                    data.AuthorID
+                ]
 
-        data = FinancialApp.models.Articles.objects.get(id=articleID)
-        if FinancialApp.models.PassedExams.objects.filter(UserID=get_user_id(request),
-                                                          ArticleID=data.id - 1).exists() or data.id == 1:
-            article = [
-                data.Name,
-                data.Text,
-                data.Author,
-                data.Created,
-                data.LastUpdate,
-                data.Visits,
-                data.Likes,
-                data.Dislikes,
-                data.id,
-                data.AuthorID
-            ]
-
-            context['article'] = article
-            context['user'] = str(get_user_id(request))
-            return render(request, 'read_article.html', context)
+                with connection.cursor() as cursor:
+                    try:
+                        LastScore = cursor.execute(
+                            'SELECT Result FROM FinancialApp_passedexams WHERE UserID==%s AND ArticleID==%s ORDER BY id DESC LIMIT 1',
+                            [get_user_id(request), articleID]).fetchone()[0]
+                        MaxScore, Passed = cursor.execute('SELECT Max(Result), Passed FROM FinancialApp_passedexams WHERE UserID==%s AND ArticleID==%s',
+                                       [get_user_id(request), articleID]).fetchone()
+                    except TypeError:
+                        LastScore, MaxScore, Passed = 0, 0, False
+                    MaxResult = len(cursor.execute('SELECT CorrectAnswer FROM FinancialApp_exams WHERE ArticleID==%s', [articleID]).fetchall())
+                context['article'] = article
+                context['user'] = str(get_user_id(request))
+                context['LastScore'] = LastScore
+                context['MaxScore'] = MaxScore
+                context['Passed'] = Passed
+                context['MaxResult'] = MaxResult
+                return render(request, 'read_article.html', context)
+            else:
+                return redirect('/textbook/')
         else:
-            return redirect('/textbook/')
+            raise Http404
     else:
         return redirect('/login/')
 
@@ -363,32 +381,50 @@ def pass_exam(request, articleID):
             raise Http404
         data = FinancialApp.models.Articles.objects.get(id=articleID)
         user_id = get_user_id(request)
-        if (FinancialApp.models.PassedExams.objects.filter(UserID=user_id,
-                                                           ArticleID=data.id - 1).exists() or data.id == 1) and not FinancialApp.models.PassedExams.objects.filter(
-            UserID=user_id, ArticleID=data.id).exists():
+        if FinancialApp.models.PassedExams.objects.filter(UserID=user_id,
+                                                          ArticleID=data.id - 1,
+                                                          Passed=True).exists() or data.id == 1 or get_user_id(
+            request) == 1:
             context = {}
             if request.method == 'POST':
                 with connection.cursor() as cursor:
-                    correct_answers = cursor.execute(
+                    temp_data = cursor.execute(
                         'SELECT Question, CorrectAnswer FROM FinancialApp_exams WHERE ArticleID==%s',
                         [articleID]).fetchall()
-                answers = dict(list(request.POST.items())[1:])
+                    correct_answers = {}
+                    for i in temp_data:
+                        correct_answers[i[0]] = i[1].split(';;')
+                user_answers = dict(request.POST)
                 score = 0
-                for i in range(len(correct_answers)):
-                    if answers[correct_answers[i][0]] == correct_answers[i][1]:
-                        score += 1
-                if score == len(correct_answers):
-                    data = FinancialApp.models.PassedExams(UserID=user_id, ArticleID=articleID)
-                    data.save()
-                    return redirect('/textbook/')
+                for i in correct_answers:
+                    try:
+                        if sorted(correct_answers[i]) == sorted(user_answers[i]):
+                            score += 1
+                    except KeyError:
+                        return HttpResponse('Выбраны ответы не на все вопросы', status=400)
+                if score >= math.ceil(len(correct_answers) / 2):
+                    data = FinancialApp.models.PassedExams(UserID=user_id, ArticleID=articleID, Result=score,
+                                                           MaxResult=len(correct_answers), Passed=True)
+                else:
+                    data = FinancialApp.models.PassedExams(UserID=user_id, ArticleID=articleID, Result=score,
+                                                           MaxResult=len(correct_answers), Passed=False)
+                data.save()
+                return redirect(f'/textbook/read/{articleID}')
 
-            data = FinancialApp.models.Exams.objects.filter(ArticleID=articleID).all()
+            with connection.cursor() as cursor:
+                data = cursor.execute(
+                    'SELECT Question, Answers, CorrectAnswer FROM FinancialApp_exams WHERE ArticleID == %s',
+                    [articleID]).fetchall()
             questions = []
-            for i in data:
-                questions.append([
-                    i.Question,
-                    [[i.Question, j] for j in i.Answers.split(';;')]
-                ])
+            for ind, value in enumerate(data):
+                questions.append((
+                    True if len(value[2].split(';;')) > 1 else False,
+                    ind + 1,
+                    value[0],
+                    tuple((ind_a + 1, value_a) for ind_a, value_a in enumerate(value[1].split(';;'))),
+                    # tuple((ind_ca+1, value_ca) for ind_ca, value_ca in enumerate(value[2].split(';;'))),
+                ))
+            context['articleID'] = articleID
             context['questions'] = questions
             return render(request, 'exam.html', context)
         else:
@@ -445,7 +481,7 @@ def edit_exam(request, articleID):
                 for i in qac:
                     Question = i[0]
                     Answers = ';;'.join(i[1])
-                    CorrectAnswer = i[2]
+                    CorrectAnswer = ';;'.join(i[2])
                     data = FinancialApp.models.Exams(ArticleID=articleID, Question=Question, Answers=Answers,
                                                      CorrectAnswer=CorrectAnswer)
                     data.save()
@@ -459,10 +495,12 @@ def edit_exam(request, articleID):
             for ind_q, value_q in enumerate(data):
                 question = value_q[0]
                 answers = []
-                correctanswer = value_q[2]
+                correctanswers = []
                 for ind_a, value_a in enumerate(value_q[1].split(';;')):
                     answers.append((ind_a + 1, value_a))
-                new_data.append((ind_q + 1, question, tuple(answers), correctanswer))
+                for ind_ca, value_ca in enumerate(value_q[2].split(';;')):
+                    correctanswers.append((ind_ca + 1, value_ca))
+                new_data.append((ind_q + 1, question, tuple(answers), tuple(correctanswers)))
             context['data'] = new_data
             return render(request, 'edit_exam.html', context)
         else:
@@ -474,22 +512,30 @@ def edit_exam(request, articleID):
 def exam_data_processing(data):
     qac = []
     cur_question = 1
-    try:
-        while True:
+    while True:
+        try:
             question = data[f'question_{cur_question}'][0]
             cur_answer = 1
             answers = set()
-            try:
-                while True:
+            while True:
+                try:
                     answers.add(data[f'answer_{cur_question}_{cur_answer}'][0])
                     cur_answer += 1
-            except KeyError:
-                pass
-            correct_answer = data[f'correct_answer_{cur_question}'][0]
-            if correct_answer not in answers:
-                return HttpResponse('Неправильно введён ответ на вопрос', status=400)
-            qac.append((question, tuple(answers), correct_answer))
+                except KeyError:
+                    break
+            correct_answers = set()
+            cur_correct_answer = 1
+            while True:
+                try:
+                    correct_answer = data[f'correct_answer_{cur_question}_{cur_correct_answer}'][0]
+                    if correct_answer not in answers:
+                        return HttpResponse('Неправильно введён ответ на вопрос', status=400)
+                    correct_answers.add(correct_answer)
+                    cur_correct_answer += 1
+                except KeyError:
+                    break
+            qac.append((question, tuple(answers), tuple(correct_answers)))
             cur_question += 1
-    except KeyError:
-        pass
+        except KeyError:
+            break
     return qac

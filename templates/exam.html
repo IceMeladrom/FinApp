@@ -8,21 +8,27 @@
     <title>Document</title>
 </head>
 <body>
-<a href="../..">Вернуться к статьям</a>
+<a href="/textbook/read/{{ articleID }}">Вернуться к уроку</a>
+<h2>Тест по уроку №{{ articleID }}</h2>
 <form method="POST">
     {% csrf_token %}
-    {% for question in questions %}
+    {% for i in questions %}
         <div>
-            <p>{{ question.0 }}</p>
+            <p>{{ i.2 }}</p>
             <div>
-                {% for i in question.1 %}
-                    <input type="radio" id="{{ i.0 }}" name="{{ i.0 }}" value="{{ i.1 }}" required>
-                    <label for="{{ i.1 }}">{{ i.1 }}</label>
+                {% for j in i.3 %}
+                    {% if i.0 == True %}
+                        <input type="checkbox" id="answer_{{ i.1 }}_{{ j.0 }}" name="{{ i.2 }}" value="{{ j.1 }}">
+                    {% else %}
+                        <input type="radio" id="answer_{{ i.1 }}_{{ j.0 }}" name="{{ i.2 }}" value="{{ j.1 }}" required>
+                    {% endif %}
+                    <label for="answer_{{ i.1 }}_{{ j.0 }}">{{ j.1 }}</label>
                     <br>
                 {% endfor %}
             </div>
         </div>
     {% endfor %}
+
     <button>Отправить</button>
 </form>
 </body>

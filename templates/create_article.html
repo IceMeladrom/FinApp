@@ -24,7 +24,7 @@
                     <h5>Вопрос №1</h5>
                     <input type="text" placeholder="Ваш вопрос" name="question_1" required>
                     <div>
-                        <ol name="answers_1" id="answers_1">
+                        <ol id="answers_1">
                             <li><input type="text" placeholder="Вариант ответа" name="answer_1_1" required></li>
                             <li><input type="text" placeholder="Вариант ответа" name="answer_1_2" required></li>
                         </ol>
@@ -34,8 +34,16 @@
                         <input type="button" onclick="remove_answer(document.getElementById('answers_1'))"
                                value="Удалить вариант ответа">
                     </div>
-                    <input type="text" placeholder="Правильный ответ" name="correct_answer_1" required>
-
+                    <ol id="correct_answer_1">
+                        <li><input type="text" placeholder="Правильный ответ" name="correct_answer_1_1" required>
+                        </li>
+                    </ol>
+                    <input type="button"
+                           onclick="add_correct_answer(document.getElementById('answers_1'),document.getElementById('correct_answer_1'))"
+                           value="Добавить правильный вариант ответа">
+                    <input type="button"
+                           onclick="del_correct_answer(document.getElementById('correct_answer_1'))"
+                           value="Удалить правильный вариант ответа">
                 </li>
             </ol>
         </div>
