@@ -1,20 +1,22 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-</head>
-<body>
-<a href="../">Вернуться к статье</a>
-<form method="POST">
-    {% csrf_token %}
-    {% for i in form %}
-        <div>{{ i }}</div>
-    {% endfor %}
-    <input type="submit" value="Изменить">
-</form>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block navbar %}
+    <li class="nav-item"><a class="nav-link" href="/diary/">Дневник</a></li>
+    <li class="nav-item"><a class="nav-link" href="/profile/">Профиль</a></li>
+    <li class="nav-item"><a class="nav-link" href="/table/">Table</a></li>
+    <li class="nav-item"><a class="nav-link" href="/textbook/">Учебник</a></li>
+{% endblock %}
+
+{% block content %}
+    <a href="../" class="btn btn-warning mt-3 mb-2">Назад</a>
+    <form method="POST">
+        {% csrf_token %}
+        <div class="mb-3">
+            {% for i in form %}
+                <label class="form-label">{{ i.label }}</label>
+                <div>{{ i }}</div>
+            {% endfor %}
+        </div>
+        <input class="btn btn-warning" type="submit" value="Изменить">
+    </form>
+{% endblock %}

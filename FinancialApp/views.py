@@ -11,17 +11,91 @@ import math
 
 
 # Create your views here.
-def index(request):
-    context = {}
+
+def get_base_context(request, pagename):
+    context = {
+        'pagename': pagename,
+    }
+
     if is_login(request):
         context['login'] = request.session['login']
+        context['user_avatar'] = connection.cursor().execute('SELECT Avatar FROM FinancialApp_users WHERE Login==%s',
+                                                             [context['login']]).fetchone()[0]
     else:
         context['login'] = 'Anon'
+
+    return context
+
+
+def index(request):
+    context = get_base_context(request, 'Главная страница')
     return render(request, 'index.html', context)
 
 
+def login(request):
+    if not is_login(request):
+        context = get_base_context(request, 'Авторизация')
+        error = False
+        if request.method == 'POST':
+            form = FinancialApp.forms.Login(request.POST)
+
+            if form.is_valid():
+                login = form.data['Login']
+                password = form.data['Password']
+                with connection.cursor() as cursor:
+                    data = cursor.execute(
+                        'SELECT Login, Password FROM FinancialApp_users WHERE Login==%s AND Password==%s',
+                        [login, password]).fetchone()
+                if data is None:
+                    error = True
+                else:
+                    request.session['login'] = login
+                    return redirect('/')
+
+        form = FinancialApp.forms.Login()
+        context['form'] = form
+        context['error'] = error
+        return render(request, 'login.html', context)
+    else:
+        return redirect('/')
+
+
+def register(request):
+    if not is_login(request):
+        context = get_base_context(request, 'Регистрация')
+        error = False
+        if request.method == 'POST':
+            form = FinancialApp.forms.Register(request.POST)
+
+            if form.is_valid():
+                login = form.data['Login']
+                password = form.data['Password']
+                confirmPassword = form.data['ConfirmPassword']
+                email = form.data['Email']
+                name = form.data['Name']
+                surname = form.data['Surname']
+
+                if password != confirmPassword:
+                    error = True
+                else:
+                    try:
+                        data = FinancialApp.models.Users(Login=login, Password=password, Email=email, Name=name,
+                                                         Surname=surname)
+                        data.save()
+                        return redirect('/login/')
+                    except django.db.utils.IntegrityError:
+                        error = True
+
+        form = FinancialApp.forms.Register()
+        context['error'] = error
+        context['form'] = form
+        return render(request, 'register.html', context)
+    else:
+        return redirect('/')
+
+
 def change_profile_data(request):
-    context = {}
+    context = context = get_base_context(request, 'Изменить данные профиля')
     error = False
     context['error'] = error
 
@@ -65,7 +139,7 @@ def get_profile_data(id):
 
 def profile(request):
     if is_login(request):
-        context = {}
+        context = get_base_context(request, 'Профиль')
         error = False
         context['error'] = error
 
@@ -92,7 +166,7 @@ def profile(request):
 
 def diary(request):
     if is_login(request):
-        context = {}
+        context = get_base_context(request, 'Дневник')
         error = False
 
         user_id = get_user_id(request)
@@ -152,68 +226,6 @@ def diary(request):
         return redirect('/login/')
 
 
-def register(request):
-    if not is_login(request):
-        context = {}
-        error = False
-        if request.method == 'POST':
-            form = FinancialApp.forms.Register(request.POST)
-
-            if form.is_valid():
-                login = form.data['Login']
-                password = form.data['Password']
-                confirmPassword = form.data['ConfirmPassword']
-                email = form.data['Email']
-                name = form.data['Name']
-                surname = form.data['Surname']
-
-                if password != confirmPassword:
-                    error = True
-                else:
-                    try:
-                        data = FinancialApp.models.Users(Login=login, Password=password, Email=email, Name=name,
-                                                         Surname=surname)
-                        data.save()
-                        return redirect('/login/')
-                    except django.db.utils.IntegrityError:
-                        error = True
-
-        form = FinancialApp.forms.Register()
-        context['error'] = error
-        context['form'] = form
-        return render(request, 'register.html', context)
-    else:
-        return redirect('/')
-
-
-def login(request):
-    if not is_login(request):
-        context = {}
-        error = False
-        if request.method == 'POST':
-            form = FinancialApp.forms.Login(request.POST)
-
-            if form.is_valid():
-                login = form.data['Login']
-                password = form.data['Password']
-                with connection.cursor() as cursor:
-                    data = cursor.execute(
-                        'SELECT Login, Password FROM FinancialApp_users WHERE Login==%s AND Password==%s',
-                        [login, password]).fetchone()
-                if data is None:
-                    error = True
-                else:
-                    request.session['login'] = login
-                    return redirect('/')
-
-        form = FinancialApp.forms.Login()
-        context['form'] = form
-        context['error'] = error
-        return render(request, 'login.html', context)
-    else:
-        return redirect('/')
-
-
 def logout(request):
     if is_login(request):
         del request.session['login']
@@ -244,7 +256,7 @@ def get_transaction_table(user_id):
 
 def table(request):
     if is_login(request):
-        context = {}
+        context = get_base_context(request, 'Table')
         error = False
         id = get_user_id(request)
         with connection.cursor() as cursor:
@@ -257,7 +269,7 @@ def table(request):
 
 def textbook(request):
     if is_login(request):
-        context = {}
+        context = get_base_context(request, 'Учебник')
         articles = connection.cursor().execute('SELECT * FROM FinancialApp_articles').fetchall()
         context['articles'] = articles
         return render(request, 'textbook.html', context)
@@ -267,7 +279,7 @@ def textbook(request):
 
 def create_article(request):
     if is_login(request):
-        context = {}
+        context = get_base_context(request, 'Создать статью')
         if request.method == 'POST':
             data = dict(request.POST)
 
@@ -310,7 +322,7 @@ def read_article(request, articleID):
             articleID = int(articleID)
         except ValueError:
             raise Http404
-        context = {}
+        context = get_base_context(request, 'Статья')
         if request.method == 'POST':
             if (not FinancialApp.models.ArticlesLikes.objects.filter(UserID=get_user_id(request), ArticleID=articleID,
                                                                      Like=True).exists()) and (
@@ -334,7 +346,7 @@ def read_article(request, articleID):
             data = FinancialApp.models.Articles.objects.get(id=articleID)
             if FinancialApp.models.PassedExams.objects.filter(
                     UserID=get_user_id(request), ArticleID=data.id - 1,
-                    Passed=True).exists() or data.id == 1 or get_user_id(request) == 1  :
+                    Passed=True).exists() or data.id == 1 or get_user_id(request) == 1:
                 article = [
                     data.Name,
                     data.Text,
@@ -353,11 +365,14 @@ def read_article(request, articleID):
                         LastScore = cursor.execute(
                             'SELECT Result FROM FinancialApp_passedexams WHERE UserID==%s AND ArticleID==%s ORDER BY id DESC LIMIT 1',
                             [get_user_id(request), articleID]).fetchone()[0]
-                        MaxScore, Passed = cursor.execute('SELECT Max(Result), Passed FROM FinancialApp_passedexams WHERE UserID==%s AND ArticleID==%s',
-                                       [get_user_id(request), articleID]).fetchone()
+                        MaxScore, Passed = cursor.execute(
+                            'SELECT Max(Result), Passed FROM FinancialApp_passedexams WHERE UserID==%s AND ArticleID==%s',
+                            [get_user_id(request), articleID]).fetchone()
                     except TypeError:
                         LastScore, MaxScore, Passed = 0, 0, False
-                    MaxResult = len(cursor.execute('SELECT CorrectAnswer FROM FinancialApp_exams WHERE ArticleID==%s', [articleID]).fetchall())
+                    MaxResult = len(cursor.execute('SELECT CorrectAnswer FROM FinancialApp_exams WHERE ArticleID==%s',
+                                                   [articleID]).fetchall())
+                context['pagename'] = article[0]
                 context['article'] = article
                 context['user'] = str(get_user_id(request))
                 context['LastScore'] = LastScore
@@ -385,7 +400,7 @@ def pass_exam(request, articleID):
                                                           ArticleID=data.id - 1,
                                                           Passed=True).exists() or data.id == 1 or get_user_id(
             request) == 1:
-            context = {}
+            context = get_base_context(request, 'Экзамен')
             if request.method == 'POST':
                 with connection.cursor() as cursor:
                     temp_data = cursor.execute(
@@ -440,7 +455,7 @@ def edit_article(request, articleID):
         except ValueError:
             raise Http404
         if FinancialApp.models.Articles.objects.filter(id=articleID).exists():
-            context = {}
+            context = get_base_context(request, 'Редактировать статью')
             if request.method == 'POST':
                 form = FinancialApp.forms.Article(request.POST)
                 if form.is_valid():
@@ -471,7 +486,7 @@ def edit_exam(request, articleID):
         except ValueError:
             raise Http404
         if FinancialApp.models.Articles.objects.filter(id=articleID).exists():
-            context = {}
+            context = get_base_context(request, 'Редактировать экзамен')
 
             if request.method == 'POST':
                 data = dict(request.POST)
