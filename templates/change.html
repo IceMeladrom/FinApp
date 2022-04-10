@@ -1,22 +1,21 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Change Data</title>
-</head>
-<body>
-<form method="POST">
-    {% csrf_token %}
-    {% for i in form %}
-        <ul>
-            <li>{{ i.label }} {{ i }}</li>
-        </ul>
-    {% endfor %}
-    <button>Изменить</button>
-</form>
-<a href="../">Назад</a>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block navbar %}
+    <li class="nav-item"><a class="nav-link" href="/diary/">Дневник</a></li>
+    <li class="nav-item"><a class="nav-link" href="/profile/">Профиль</a></li>
+    <li class="nav-item"><a class="nav-link" href="/table/">Table</a></li>
+    <li class="nav-item"><a class="nav-link" href="/textbook/">Учебник</a></li>
+{% endblock %}
+
+{% block content %}
+    <form method="POST">
+        {% csrf_token %}
+        {% for i in form %}
+            <div class="mb-3">
+            <label class="form-label">{{ i.label }}</label>
+            {{ i }}
+        {% endfor %}
+        </div>
+        <button class="btn btn-warning">Изменить</button>
+    </form>
+{% endblock %}

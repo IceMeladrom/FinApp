@@ -1,16 +1,5 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"
-            integrity="sha512-QSkVNOCYLtj73J4hbmVoOV6KVZuMluZlioC+trLpewV8qMjsWqlIQvkn1KGX2StWvPMdWGBqim1xlC8krl1EKQ=="
-            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    {% load static %}
-    <title>Document</title>
-</head>
+{% extends "base.html" %}
+
 <style>
     .table {
         width: 100%;
@@ -32,51 +21,64 @@
     }
 </style>
 
-<body>
+{% block navbar %}
+    <li class="nav-item"><a class="nav-link text-warning" href="/diary/">Дневник</a></li>
+    <li class="nav-item"><a class="nav-link" href="/profile/">Профиль</a></li>
+    <li class="nav-item"><a class="nav-link" href="/table/">Table</a></li>
+    <li class="nav-item"><a class="nav-link" href="/textbook/">Учебник</a></li>
+{% endblock %}
 
-<h2>Денег: {{ amount }}</h2>
+{% block content %}
+    <h2>Денег: {{ amount }}</h2>
 
-<form method="POST">
-    {% csrf_token %}
-    {{ Transaction }}
-    <input type="text" name="{{ Transaction.prefix }}" hidden>
-    {{ CostCategory }}
-    <input type="text" name="{{ CostCategory.prefix }}" hidden>
-    <button name="Plus">Добавить</button>
-    <button name="Minus">Убавить</button>
-</form>
-<a href="../">Назад</a>
-<canvas id="myChart" height="200" width="500"></canvas>
+    <form method="POST">
+        {% csrf_token %}
+        <div class="mb-3">
+            {{ Transaction }}
+            <input type="text" name="{{ Transaction.prefix }}" hidden>
+            {{ CostCategory }}
+            <input type="text" name="{{ CostCategory.prefix }}" hidden>
+        </div>
+        <button class="btn btn-warning" name="Plus">Добавить</button>
+        <button class="btn btn-warning" name="Minus">Убавить</button>
+    </form>
+    <canvas id="myChart" height="200" width="500"></canvas>
 
-<table class="table">
-    <thead>
-    <tr>
-        <th>Транзакция</th>
-        <th>Дата</th>
-        <th>Категория</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for i in table %}
+    <table class="table">
+        <thead>
         <tr>
-            {% if i.1 == "Зарплата" %}
-                <td style="color: green">+{{ i.0 }}$</td>
-            {% else %}
-                <td style="color: darkred">{{ i.0 }}$</td>
-            {% endif %}
-            <td>{{ i.2 }}</td>
-            <td>{{ i.3 }}</td>
+            <th>Транзакция</th>
+            <th>Дата</th>
+            <th>Категория</th>
         </tr>
-    {% endfor %}
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+        {% for i in table %}
+            <tr>
+                {% if i.1 == "Зарплата" %}
+                    <td style="color: green">+{{ i.0 }}$</td>
+                {% else %}
+                    <td style="color: darkred">{{ i.0 }}$</td>
+                {% endif %}
+                <td>{{ i.2 }}</td>
+                <td>{{ i.3 }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 
-<script>
-    var first_log = {{ date.0 }};
-    var last_log = {{ date.1 }};
-    var transaction_dates = {{ date.2 }};
-</script>
-<script src="{% static 'js/mychart.js' %}"></script>
+    {% block base_script %}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"
+                integrity="sha512-QSkVNOCYLtj73J4hbmVoOV6KVZuMluZlioC+trLpewV8qMjsWqlIQvkn1KGX2StWvPMdWGBqim1xlC8krl1EKQ=="
+                crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script>
+            var first_log = {{ date.0 }};
+            var last_log = {{ date.1 }};
+            var transaction_dates = {{ date.2 }};
+        </script>
+        {% load static %}
+        <script src="{% static 'js/mychart.js' %}"></script>
+    {% endblock %}
 
-</body>
+{% endblock %}
 </html>

@@ -1,18 +1,14 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-</head>
-<body>
-<form method="POST">
-    {% csrf_token %}
-    {{ form }}
-    <button>Жмяк</button>
-</form>
-<a href="../">Назад</a>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block content %}
+    <form method="POST">
+        {% csrf_token %}
+        <div class="mb-3">
+            {% for i in form %}
+                <label class="form-label">{{ i.label }}</label>
+                {{ i }}
+            {% endfor %}
+        </div>
+        <button class="btn btn-warning">Жмяк</button>
+    </form>
+{% endblock %}

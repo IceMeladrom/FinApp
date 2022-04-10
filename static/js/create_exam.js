@@ -18,6 +18,7 @@ function add_question(num_of_questions) {
             placeholder: 'Ваш вопрос',
             name: `question_${questions.childElementCount + 1}`,
             required: 'required',
+            class: 'form-control m-1',
         });
         li.appendChild(question);
         let div = document.createElement('div');
@@ -34,6 +35,7 @@ function add_question(num_of_questions) {
             name: `${questions.childElementCount + 1}`,
             onclick: `add_answer(document.getElementById('answers_${questions.childElementCount + 1}').childElementCount+1, ${questions.childElementCount + 1}, document.getElementById('answers_${questions.childElementCount + 1}'))`,
             value: 'Добавить вариант ответа',
+            class: 'btn btn-success m-1',
         });
         let input_del_ans = document.createElement('input');
         setAttributes(input_del_ans, {
@@ -41,6 +43,7 @@ function add_question(num_of_questions) {
             name: `${questions.childElementCount + 1}`,
             onclick: `remove_answer(document.getElementById('answers_${questions.childElementCount + 1}'))`,
             value: 'Удалить вариант ответа',
+            class: 'btn btn-danger m-1',
         });
         div.appendChild(ol);
         div.appendChild(input_new_ans);
@@ -56,7 +59,8 @@ function add_question(num_of_questions) {
             type: 'text',
             placeholder: 'Правильный ответ',
             name: `correct_answer_${ol_correct_answers.id.split('_')[2]}_${ol_correct_answers.childElementCount + 1}`,
-            required: 'required'
+            required: 'required',
+            class: 'form-control m-1',
         });
         let li_correct_answer = document.createElement('li');
         li_correct_answer.appendChild(input_correct_answer);
@@ -67,12 +71,14 @@ function add_question(num_of_questions) {
         setAttributes(input_add_correct_answer, {
             type: 'button',
             onclick: `add_correct_answer(document.getElementById('answers_${ol.id.split('_')[1]}'),document.getElementById('correct_answer_${ol_correct_answers.id.split('_')[2]}'))`,
-            value: 'Добавить правильный вариант ответа'
+            value: 'Добавить правильный вариант ответа',
+            class: 'btn btn-success m-1',
         });
         setAttributes(input_del_correct_answer, {
             type: 'button',
             onclick: `del_correct_answer(document.getElementById('correct_answer_${ol_correct_answers.id.split('_')[2]}'))`,
-            value: 'Удалить правильный вариант ответа'
+            value: 'Удалить правильный вариант ответа',
+            class: 'btn btn-danger m-1',
         });
         li.appendChild(input_add_correct_answer);
         li.appendChild(input_del_correct_answer);
@@ -94,6 +100,7 @@ function add_answer(cur_answer, cur_question, ol) {
             placeholder: 'Вариант ответа',
             name: `answer_${cur_question}_${cur_answer}`,
             required: 'required',
+            class: 'form-control m-1',
         });
         li.appendChild(input);
         ol.appendChild(li);
@@ -119,6 +126,7 @@ function add_correct_answer(ol_answers, ol_correct_answer) {
             placeholder: 'Правильный ответ',
             name: `correct_answer_${ol_answers.id.split('_')[1]}_${ol_correct_answer.childElementCount + 1}`,
             required: 'required',
+            class: 'form-control m-1',
         });
         li.appendChild(input);
         ol_correct_answer.appendChild(li);

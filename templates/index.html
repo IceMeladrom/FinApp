@@ -1,28 +1,42 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-</head>
-<body>
-<h1>Hello {{ login }}</h1>
-{% if login == "Anon" %}
-    <a href="login/">Войти</a>
-    <br>
-    <a href="register/">Зарегистрироваться</a>
-    <br>
-{% endif %}
-<a href="logout/">Выйти из учетной записи</a>
-<br>
-<a href="diary/">Дневник</a>
-<br>
-<a href="profile/">Профиль</a>
-<br>
-<a href="table/">table</a>
-<br>
-<a href="textbook/">Учебник</a>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block navbar %}
+    <li class="nav-item"><a class="nav-link" href="/diary/">Дневник</a></li>
+    <li class="nav-item"><a class="nav-link" href="/profile/">Профиль</a></li>
+    <li class="nav-item"><a class="nav-link" href="/table/">Table</a></li>
+    <li class="nav-item"><a class="nav-link" href="/textbook/">Учебник</a></li>
+{% endblock %}
+
+{% block content %}
+    <div>
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est, molestiae tempora? Ab accusantium ad deserunt
+        dolor enim est, iure maxime nesciunt nulla numquam perferendis perspiciatis quaerat qui reiciendis rerum vero.
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad aliquid, dignissimos dolores harum ipsa numquam
+        obcaecati quae tempora tenetur voluptatem. Ad doloribus illum libero magnam mollitia nobis omnis rerum sed.
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est, molestiae tempora? Ab accusantium ad deserunt
+        dolor enim est, iure maxime nesciunt nulla numquam perferendis perspiciatis quaerat qui reiciendis rerum vero.
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad aliquid, dignissimos dolores harum ipsa numquam
+        obcaecati quae tempora tenetur voluptatem. Ad doloribus illum libero magnam mollitia nobis omnis rerum sed.
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est, molestiae tempora? Ab accusantium ad deserunt
+        dolor enim est, iure maxime nesciunt nulla numquam perferendis perspiciatis quaerat qui reiciendis rerum vero.
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad aliquid, dignissimos dolores harum ipsa numquam
+        obcaecati quae tempora tenetur voluptatem. Ad doloribus illum libero magnam mollitia nobis omnis rerum sed.
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est, molestiae tempora? Ab accusantium ad deserunt
+        dolor enim est, iure maxime nesciunt nulla numquam perferendis perspiciatis quaerat qui reiciendis rerum vero.
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad aliquid, dignissimos dolores harum ipsa numquam
+        obcaecati quae tempora tenetur voluptatem. Ad doloribus illum libero magnam mollitia nobis omnis rerum sed.
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est, molestiae tempora? Ab accusantium ad deserunt
+        dolor enim est, iure maxime nesciunt nulla numquam perferendis perspiciatis quaerat qui reiciendis rerum vero.
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad aliquid, dignissimos dolores harum ipsa numquam
+        obcaecati quae tempora tenetur voluptatem. Ad doloribus illum libero magnam mollitia nobis omnis rerum sed.
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est, molestiae tempora? Ab accusantium ad deserunt
+        dolor enim est, iure maxime nesciunt nulla numquam perferendis perspiciatis quaerat qui reiciendis rerum vero.
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad aliquid, dignissimos dolores harum ipsa numquam b
+        dolor enim est, iure maxime nesciunt nulla numquam perferendis perspiciatis quaerat qui reiciendis rerum vero.
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad aliquid, dignissimos dolores harum ipsa numquam
+        obcaecati quae tempora tenetur voluptatem. Ad doloribus illum libero magnam mollitia nobis omnis rerum sed.
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Amet, architecto asperiores doloremque excepturi id in
+        molestiae nam necessitatibus numquam obcaecati officiis pariatur quod tenetur voluptates voluptatum! Consequatur
+        modi rem veritatis.
+    </div>
+{% endblock %}
