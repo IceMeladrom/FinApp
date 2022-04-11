@@ -12,7 +12,9 @@
     <p>
     <div>Посещений: {{ article.5 }} Лайков: {{ article.6 }} Дизлайков: {{ article.7 }}</div>
     </p>
-    <section>{{ article.1 }}</section>
+    {% for i in text %}
+        <section>{{ i }}</section>
+    {% endfor %}
     <p>
     <address rel="author">Написал: {{ article.2 }}</address>
     <time>Создано: {{ article.3 }}</time>
