@@ -8,6 +8,7 @@
 {% endblock %}
 
 {% block content %}
+    <a href="change/" class="btn btn-warning mt-3">Изменить данные</a>
     {% for i in data %}
         {% if i.0 == "Avatar" %}
             {% load static %}
@@ -28,5 +29,4 @@
         </div>
         <button class="btn btn-warning" type="submit">Загрузить</button>
     </form>
-    <a href="change/">Изменить данные</a>
 {% endblock %}

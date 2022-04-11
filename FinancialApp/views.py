@@ -1,3 +1,4 @@
+import datetime
 import time
 
 from django.db import connection
@@ -7,6 +8,7 @@ import django.db.utils
 import FinancialApp.forms
 import FinancialApp.models
 from django.utils.timezone import now
+from datetime import datetime
 import math
 
 
@@ -15,6 +17,7 @@ import math
 def get_base_context(request, pagename):
     context = {
         'pagename': pagename,
+        'current_year': datetime.today().year,
     }
 
     if is_login(request):

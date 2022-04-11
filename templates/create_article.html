@@ -1,61 +1,68 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    {% load static %}
-    <title>Document</title>
-</head>
-<body>
-<a href="../">Вернуться назад</a>
-<form method="POST" name="form_global">
-    {% csrf_token %}
-    {% for i in form %}
-        <div style="margin-bottom: 5px">{{ i }}</div>
-    {% endfor %}
+{% extends "base.html" %}
 
-    <div>
-        <p>Экзамен:</p>
+{% block navbar %}
+    <li class="nav-item"><a class="nav-link" href="/diary/">Дневник</a></li>
+    <li class="nav-item"><a class="nav-link" href="/profile/">Профиль</a></li>
+    <li class="nav-item"><a class="nav-link" href="/table/">Table</a></li>
+    <li class="nav-item"><a class="nav-link" href="/textbook/">Учебник</a></li>
+{% endblock %}
+
+{% block content %}
+    <form method="POST" name="form_global">
+        {% csrf_token %}
+        {% for i in form %}
+            <div class="mb-3">
+                <label class="form-label">{{ i.label }}</label>
+                {{ i }}
+            </div>
+        {% endfor %}
+
         <div>
-            <ol id="questions">
-                <li>
-                    <h5>Вопрос №1</h5>
-                    <input type="text" placeholder="Ваш вопрос" name="question_1" required>
-                    <div>
-                        <ol id="answers_1">
-                            <li><input type="text" placeholder="Вариант ответа" name="answer_1_1" required></li>
-                            <li><input type="text" placeholder="Вариант ответа" name="answer_1_2" required></li>
+            <p>Экзамен:</p>
+            <div>
+                <ol id="questions">
+                    <li>
+                        <h5>Вопрос №1</h5>
+                        <input type="text" class="form-control m-1" placeholder="Ваш вопрос" name="question_1" required>
+                        <div>
+                            <ol id="answers_1">
+                                <li><input type="text" class="form-control m-1" placeholder="Вариант ответа"
+                                           name="answer_1_1" required></li>
+                                <li><input type="text" class="form-control m-1" placeholder="Вариант ответа"
+                                           name="answer_1_2" required></li>
+                            </ol>
+                            <input type="button" class="btn btn-success m-1"
+                                   onclick="add_answer(document.getElementById('answers_1').childElementCount+1, 1, document.getElementById('answers_1'))"
+                                   value="Добавить вариант ответа">
+                            <input type="button" class="btn btn-danger m-1"
+                                   onclick="remove_answer(document.getElementById('answers_1'))"
+                                   value="Удалить вариант ответа">
+                        </div>
+                        <ol id="correct_answer_1">
+                            <li><input type="text" class="form-control m-1" placeholder="Правильный ответ"
+                                       name="correct_answer_1_1" required>
+                            </li>
                         </ol>
-                        <input type="button"
-                               onclick="add_answer(document.getElementById('answers_1').childElementCount+1, 1, document.getElementById('answers_1'))"
-                               value="Добавить вариант ответа">
-                        <input type="button" onclick="remove_answer(document.getElementById('answers_1'))"
-                               value="Удалить вариант ответа">
-                    </div>
-                    <ol id="correct_answer_1">
-                        <li><input type="text" placeholder="Правильный ответ" name="correct_answer_1_1" required>
-                        </li>
-                    </ol>
-                    <input type="button"
-                           onclick="add_correct_answer(document.getElementById('answers_1'),document.getElementById('correct_answer_1'))"
-                           value="Добавить правильный вариант ответа">
-                    <input type="button"
-                           onclick="del_correct_answer(document.getElementById('correct_answer_1'))"
-                           value="Удалить правильный вариант ответа">
-                </li>
-            </ol>
+                        <input type="button" class="btn btn-success m-1"
+                               onclick="add_correct_answer(document.getElementById('answers_1'),document.getElementById('correct_answer_1'))"
+                               value="Добавить правильный вариант ответа">
+                        <input type="button" class="btn btn-danger m-1"
+                               onclick="del_correct_answer(document.getElementById('correct_answer_1'))"
+                               value="Удалить правильный вариант ответа">
+                    </li>
+                </ol>
+            </div>
+            <input type="button" class="btn btn-success m-1"
+                   onclick="add_question(document.getElementById('questions').childElementCount)"
+                   value="Добавить новый вопрос">
+            <input type="button" class="btn btn-danger m-1"
+                   onclick="remove_question(document.getElementById('questions').lastElementChild)"
+                   value="Удалить вопрос">
         </div>
-        <input type="button" onclick="add_question(document.getElementById('questions').childElementCount)"
-               value="Добавить новый вопрос">
-        <input type="button"
-               onclick="remove_question(document.getElementById('questions').lastElementChild)"
-               value="Удалить вопрос">
-    </div>
-    <input type="submit" value="Отправить">
-</form>
-
-<script src="{% static 'js/create_exam.js' %}"></script>
-</body>
-</html>
+        <input type="submit" class="btn btn-warning m-1" value="Отправить">
+    </form>
+    {% block base_script %}
+        {% load static %}
+        <script src="{% static 'js/create_exam.js' %}"></script>
+    {% endblock %}
+{% endblock %}
