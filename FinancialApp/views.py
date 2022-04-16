@@ -218,6 +218,7 @@ def diary(request):
             if 'Transaction' in request.POST:
                 Transaction = FinancialApp.forms.Transaction(request.POST, prefix='Transaction')
                 CostCategory = FinancialApp.forms.CostCategory(request.POST, prefix='CostCategory')
+                CostDescription = FinancialApp.forms.CostDescription(request.POST, prefix='CostDescription')
                 if Transaction.is_valid():
                     cost_cat = str(CostCategory.data['CostCategory-Category'])
                     if 'Plus' in Transaction.data:
