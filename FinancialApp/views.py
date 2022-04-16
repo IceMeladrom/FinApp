@@ -283,7 +283,7 @@ def get_transaction_table(user_id):
         data = cursor.execute('SELECT Amount, Category, Date, CostCategory, CostDescription FROM FinancialApp_statistics WHERE UserID == %s',
                               [user_id]).fetchall()
         data = cursor.execute(
-            'SELECT Amount, Category, Date, CostCategory FROM FinancialApp_statistics WHERE UserID == %s ORDER BY id DESC',
+            'SELECT Amount, Category, Date, CostCategory, CostDescription FROM FinancialApp_statistics WHERE UserID == %s ORDER BY id DESC',
             [user_id]).fetchall()
 
     return data
