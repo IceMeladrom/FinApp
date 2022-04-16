@@ -8,14 +8,15 @@
 {% endblock %}
 
 {% block content %}
+    <a href="../" class="btn btn-warning mt-3 mb-2">Назад</a>
     <form method="POST">
         {% csrf_token %}
-        {% for i in form %}
-            <div class="mb-3">
-            <label class="form-label">{{ i.label }}</label>
-            {{ i }}
-        {% endfor %}
+        <div class="mb-3">
+            {% for i in form %}
+                <label class="form-label">{{ i.label }}</label>
+                <div>{{ i }}</div>
+            {% endfor %}
         </div>
-        <button class="btn btn-warning">Изменить</button>
+        <input class="btn btn-warning" type="submit" value="Изменить">
     </form>
 {% endblock %}

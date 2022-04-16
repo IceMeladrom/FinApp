@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block navbar %}
+    <li class="nav-item"><a class="nav-link" href="/diary/">Дневник</a></li>
+    <li class="nav-item"><a class="nav-link" href="/profile/">Профиль</a></li>
+    <li class="nav-item"><a class="nav-link" href="/table/">Table</a></li>
+    <li class="nav-item"><a class="nav-link" href="/textbook/">Учебник</a></li>
+{% endblock %}
+
+{% block content %}
+    <a href="/textbook/">Вернуться</a>
+    <form method="POST" name="form_global">
+        {% csrf_token %}
+        <div>
+            <div>
+                <ol id="questions">
+                    {% for question in data %}
+                        <li>
+                            <h5>Вопрос №{{ question.0 }}</h5>
+                            <input type="text" placeholder="Ваш вопрос" name="question_{{ question.0 }}"
+                                   value="{{ question.1 }}" required class="form-control m-1">
+                            <div>
+                                <ol id="answers_{{ question.0 }}">
+                                    {% for answer in question.2 %}
+                                        <li><input type="text" placeholder="Вариант ответа"
+                                                   name="answer_{{ question.0 }}_{{ answer.0 }}" value="{{ answer.1 }}"
+                                                   required class="form-control m-1"></li>
+                                    {% endfor %}
+                                </ol>
+                                <input type="button" class="btn btn-success m-1"
+                                       onclick="add_answer(document.getElementById('answers_{{ question.0 }}').childElementCount+1, {{ question.0 }}, document.getElementById('answers_{{ question.0 }}'))"
+                                       value="Добавить вариант ответа">
+                                <input type="button" class="btn btn-danger m-1"
+                                       onclick="remove_answer(document.getElementById('answers_{{ question.0 }}'))"
+                                       value="Удалить вариант ответа">
+                            </div>
+                            <ol id="correct_answer_{{ question.0 }}">
+                                {% for correct_answer in question.3 %}
+                                    <li><input type="text" placeholder="Правильный ответ" class="form-control m-1"
+                                               name="correct_answer_{{ question.0 }}_{{ correct_answer.0 }}"
+                                               value="{{ correct_answer.1 }}" required></li>
+                                {% endfor %}
+                            </ol>
+                            <input type="button" class="btn btn-success m-1"
+                                   onclick="add_correct_answer(document.getElementById('answers_{{ question.0 }}'),document.getElementById('correct_answer_{{ question.0 }}'))"
+                                   value="Добавить правильный вариант ответа">
+                            <input type="button" class="btn btn-danger m-1"
+                                   onclick="del_correct_answer(document.getElementById('correct_answer_{{ question.0 }}'))"
+                                   value="Удалить правильный вариант ответа">
+                        </li>
+                    {% endfor %}
+                </ol>
+            </div>
+            <input type="button" onclick="add_question(document.getElementById('questions').childElementCount)"
+                   value="Добавить новый вопрос" class="btn btn-success m-1">
+            <input type="button" class="btn btn-danger m-1"
+                   onclick="remove_question(document.getElementById('questions').lastElementChild)"
+                   value="Удалить вопрос">
+        </div>
+        <input type="submit" value="Отправить" class="btn btn-warning m-1">
+    </form>
+    {% block base_script %}
+        {% load static %}
+        <script src="{% static 'js/create_exam.js' %}"></script>
+    {% endblock %}
+{% endblock %}

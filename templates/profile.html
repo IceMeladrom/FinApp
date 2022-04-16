@@ -1,32 +1,32 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Profile</title>
-    {% load static %}
-</head>
-<body>
-{% for i in data %}
-    {% if i.0 == "Avatar" %}
-        {% if i.1 != "img/Durr.png" %}
-            <img src="{% get_media_prefix %}{{ i.1 }}" alt="Your avatar">
+{% extends "base.html" %}
+
+{% block navbar %}
+    <li class="nav-item"><a class="nav-link" href="/diary/">Дневник</a></li>
+    <li class="nav-item"><a class="nav-link text-warning" href="/profile/">Профиль</a></li>
+    <li class="nav-item"><a class="nav-link" href="/table/">Table</a></li>
+    <li class="nav-item"><a class="nav-link" href="/textbook/">Учебник</a></li>
+{% endblock %}
+
+{% block content %}
+    <a href="change/" class="btn btn-warning mt-3">Изменить данные</a>
+    {% for i in data %}
+        {% if i.0 == "Avatar" %}
+            {% load static %}
+            {% if i.1 != "img/Durr.png" %}
+                <img src="{% get_media_prefix %}{{ i.1 }}" alt="Your avatar">
+            {% else %}
+                <img src="{% static 'img/Durr.png' %}" alt="Your avatar" width="400" height="400">
+            {% endif %}
         {% else %}
-            <img src="{% static 'img/Durr.png' %}" alt="Your avatar" width="400" height="400">
+            <div>{{ i.0 }}: {{ i.1 }}</div>
         {% endif %}
-    {% else %}
-        <div>{{ i.0 }}: {{ i.1 }}</div>
-    {% endif %}
-{% endfor %}
-<form method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form }}
-    <input type="submit" value="Загрузить">
-</form>
-<a href="change/">Изменить данные</a>
-<a href="../">Назад</a>
-<br>
-</body>
-</html>
+    {% endfor %}
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label class="form-label">{{ form.Avatar.label }}</label>
+            {{ form.Avatar }}
+        </div>
+        <button class="btn btn-warning" type="submit">Загрузить</button>
+    </form>
+{% endblock %}

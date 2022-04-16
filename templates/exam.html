@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block navbar %}
+    <li class="nav-item"><a class="nav-link" href="/diary/">Дневник</a></li>
+    <li class="nav-item"><a class="nav-link" href="/profile/">Профиль</a></li>
+    <li class="nav-item"><a class="nav-link" href="/table/">Table</a></li>
+    <li class="nav-item"><a class="nav-link" href="/textbook/">Учебник</a></li>
+{% endblock %}
+
+{% block content %}
+    <a href="/textbook/read/{{ articleID }}" class="btn btn-warning mt-3">Вернуться к уроку</a>
+    <h2>Тест по уроку №{{ articleID }}</h2>
+    <form method="POST">
+        {% csrf_token %}
+        <ol>
+            {% for i in questions %}
+                <div>
+                    <li><label>{{ i.2 }}</label></li>
+                    <div>
+                        <ol>
+                            {% for j in i.3 %}
+                                <li>
+                                    {% if i.0 == True %}
+                                        <div class="input-group-text">
+                                            <input type="checkbox" id="answer_{{ i.1 }}_{{ j.0 }}" name="{{ i.2 }}"
+                                                   value="{{ j.1 }}">
+                                            <label class="" for="answer_{{ i.1 }}_{{ j.0 }}">{{ j.1 }}</label>
+                                        </div>
+                                    {% else %}
+                                        <div class="input-group-text">
+                                            <input type="radio" id="answer_{{ i.1 }}_{{ j.0 }}" name="{{ i.2 }}"
+                                                   value="{{ j.1 }}"
+                                                   required>
+                                            <label class="ms-1" for="answer_{{ i.1 }}_{{ j.0 }}">{{ j.1 }}</label>
+                                        </div>
+                                    {% endif %}
+                                    <br>
+                                </li>
+                            {% endfor %}
+                        </ol>
+                    </div>
+                </div>
+            {% endfor %}
+        </ol>
+        <button class="btn btn-warning">Отправить</button>
+    </form>
+{% endblock %}
