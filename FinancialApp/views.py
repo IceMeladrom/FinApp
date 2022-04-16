@@ -1,5 +1,6 @@
 import datetime
 import time
+import math
 
 from django.db import connection
 from django.http import HttpResponse, Http404
@@ -9,10 +10,34 @@ import FinancialApp.forms
 import FinancialApp.models
 from django.utils.timezone import now
 from datetime import datetime
-import math
 
 
 # Create your views here.
+
+def currency_rates():
+    from bs4 import BeautifulSoup
+    import urllib.request
+    p = urllib.request.urlopen('https://www.cbr.ru/eng/currency_base/daily/')
+    soup = BeautifulSoup(p, 'html.parser')
+    js = {}
+    table = soup.find('table')
+    for tr in table.find_all('tr'):
+        data = tr.find_all('td')
+        try:
+            js[data[1].get_text()] = {
+                'Num сode': data[0].get_text(),
+                'Char code': data[1].get_text(),
+                'Unit': data[2].get_text(),
+                'Currency': data[3].get_text(),
+                'Rate': data[4].get_text(),
+            }
+        except IndexError:
+            continue
+    currency = []
+    for i in js:
+        currency.append((js[i]['Char code'], js[i]['Unit'], js[i]['Currency'], js[i]['Rate']))
+    return currency
+
 
 def get_base_context(request, pagename):
     context = {
@@ -32,6 +57,7 @@ def get_base_context(request, pagename):
 
 def index(request):
     context = get_base_context(request, 'Главная страница')
+    context['currency'] = currency_rates()
     return render(request, 'index.html', context)
 
 
