@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block navbar %}
+    <li class="nav-item"><a class="nav-link" href="/diary/">Дневник</a></li>
+    <li class="nav-item"><a class="nav-link" href="/profile/">Профиль</a></li>
+    <li class="nav-item"><a class="nav-link" href="/table/">Table</a></li>
+    <li class="nav-item"><a class="nav-link text-warning" href="/textbook/">Учебник</a></li>
+{% endblock %}
+
+{% block content %}
+    <a href="create/" class="btn btn-warning mt-3 mb-2">Создать статью</a>
+    <div style="display: flex; padding: 10px 0;">
+        {% for article in articles %}
+            <div class="p-3 me-3" style="border: solid 1px; max-width: 400px;">
+                <h2>{{ article.9 }}</h2>
+                <h4>Написал статью: {{ article.1 }}
+                    <br>
+                    <time>Создана: {{ article.3 }}</time>
+                    <br>
+                    <time>Последнее обновление: {{ article.4 }}</time>
+                </h4>
+                <a href="read/{{ article.0 }}" class="btn btn-warning">Прочитать</a>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

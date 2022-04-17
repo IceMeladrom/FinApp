@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block navbar %}
+    <li class="nav-item"><a class="nav-link" href="/diary/">Дневник</a></li>
+    <li class="nav-item"><a class="nav-link" href="/profile/">Профиль</a></li>
+    <li class="nav-item"><a class="nav-link" href="/table/">Table</a></li>
+    <li class="nav-item"><a class="nav-link" href="/textbook/">Учебник</a></li>
+{% endblock %}
+
+{% block content %}
+    <form method="POST">
+        {% csrf_token %}
+        {% for i in form %}
+            <div class="mb-3">
+            <label class="form-label">{{ i.label }}</label>
+            {{ i }}
+        {% endfor %}
+        </div>
+        <button class="btn btn-warning">Изменить</button>
+    </form>
+{% endblock %}

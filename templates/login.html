@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+    <form method="POST">
+        {% csrf_token %}
+        <div class="mb-3">
+            {% for i in form %}
+                <label class="form-label">{{ i.label }}</label>
+                {{ i }}
+            {% endfor %}
+        </div>
+        <button class="btn btn-warning">Жмяк</button>
+    </form>
+{% endblock %}

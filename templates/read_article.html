@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block navbar %}
+    <li class="nav-item"><a class="nav-link" href="/diary/">Дневник</a></li>
+    <li class="nav-item"><a class="nav-link" href="/profile/">Профиль</a></li>
+    <li class="nav-item"><a class="nav-link" href="/table/">Table</a></li>
+    <li class="nav-item"><a class="nav-link" href="/textbook/">Учебник</a></li>
+{% endblock %}
+
+{% block content %}
+    <h2>{{ article.0 }}</h2>
+    <p>
+    <div>Посещений: {{ article.5 }} Лайков: {{ article.6 }} Дизлайков: {{ article.7 }}</div>
+    </p>
+    {% for i in text %}
+        <section>{{ i }}</section>
+    {% endfor %}
+    <p>
+    <address rel="author">Написал: {{ article.2 }}</address>
+    <time>Создано: {{ article.3 }}</time>
+    <time>Обновлено: {{ article.4 }}</time>
+    </p>
+    <form method="POST">
+        {% csrf_token %}
+        <p>Понравилась статья?</p>
+        <button name="like" class="btn btn-success">Like</button>
+        <button name="dislike" class="btn btn-danger">Dislike</button>
+    </form>
+    <div>
+        <p>Предыдущая попытка: {{ LastScore }}/{{ MaxResult }} баллов</p>
+        <p>Лучшая попытка: {{ MaxScore }}/{{ MaxResult }} баллов</p>
+        {% if Passed %}
+            <p style="color: green">Тест успешно сдан</p>
+        {% else %}
+            <p style="color: red">Тест не пройден</p>
+        {% endif %}
+    </div>
+    <a href="/textbook/exam/{{ article.8 }}" class="btn btn-warning">Пройти экзамен</a>
+    {% if article.9 == user or user == '1' %}
+        <div>
+            <a href="edit/" class="btn btn-warning mt-3 mb-2">Редактировать статью</a>
+            <a href="/textbook/exam/{{ article.8 }}/edit/" class="btn btn-warning mt-3 mb-2">Редактировать экзамен</a>
+        </div>
+    {% endif %}
+{% endblock %}
