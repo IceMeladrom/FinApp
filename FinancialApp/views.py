@@ -218,24 +218,22 @@ def diary(request):
             if 'Transaction' in request.POST:
                 Transaction = FinancialApp.forms.Transaction(request.POST, prefix='Transaction')
                 CostCategory = FinancialApp.forms.CostCategory(request.POST, prefix='CostCategory')
-                CostDescription = FinancialApp.forms.CostDescription(request.POST, prefix='CostDescription')
                 if Transaction.is_valid():
                     cost_cat = str(CostCategory.data['CostCategory-Category'])
-                    cost_des = str(CostDescription.data['CostDescription-Description'])
                     if 'Plus' in Transaction.data:
                         amount = abs(int(Transaction.data['Transaction-Amount']))
                         cur_amount += amount
                         with connection.cursor() as cursor:
                             cursor.execute(
-                                'INSERT INTO FinancialApp_statistics(UserID, CurrentAmount, Amount, Category, Date, CostCategory, CostDescription) VALUES(%s, %s, %s, %s, %s, %s, %s)',
-                                [user_id, cur_amount, amount, 'Зарплата', now(), cost_cat, cost_des])
+                                'INSERT INTO FinancialApp_statistics(UserID, CurrentAmount, Amount, Category, Date, CostCategory) VALUES(%s, %s, %s, %s, %s, %s)',
+                                [user_id, cur_amount, amount, 'Зарплата', now(), cost_cat])
                     else:
                         amount = -1 * abs(int(Transaction.data['Transaction-Amount']))
                         cur_amount += amount
                         with connection.cursor() as cursor:
                             cursor.execute(
-                                'INSERT INTO FinancialApp_statistics(UserID, CurrentAmount, Amount, Category, Date, CostCategory, Description) VALUES(%s, %s, %s, %s, %s, %s, %s)',
-                                [user_id, cur_amount, amount, 'Трата', now(), cost_cat, cost_des])
+                                'INSERT INTO FinancialApp_statistics(UserID, CurrentAmount, Amount, Category, Date, CostCategory) VALUES(%s, %s, %s, %s, %s, %s)',
+                                [user_id, cur_amount, amount, 'Трата', now(), cost_cat])
                     with connection.cursor() as cursor:
                         cursor.execute('UPDATE FinancialApp_users SET Amount = Amount + %s WHERE id == %s',
                                        [amount, user_id])
@@ -244,14 +242,12 @@ def diary(request):
         table = get_transaction_table(user_id)
         Transaction = FinancialApp.forms.Transaction(prefix='Transaction')
         CostCategory = FinancialApp.forms.CostCategory(prefix='CostCategory')
-        CostDescription = FinancialApp.forms.CostDescription(prefix='CostDescription')
 
         context['date'] = [first_log, last_log, new_transaction_dates]
         context['amount'] = cur_amount
         context['table'] = table
         context['Transaction'] = Transaction
         context['CostCategory'] = CostCategory
-        context['CostDescription'] = CostDescription
         context['error'] = error
 
         return render(request, 'diary.html', context)
@@ -280,10 +276,8 @@ def get_user_id(request):
 
 def get_transaction_table(user_id):
     with connection.cursor() as cursor:
-        data = cursor.execute('SELECT Amount, Category, Date, CostCategory, CostDescription FROM FinancialApp_statistics WHERE UserID == %s',
-                              [user_id]).fetchall()
         data = cursor.execute(
-            'SELECT Amount, Category, Date, CostCategory, CostDescription FROM FinancialApp_statistics WHERE UserID == %s ORDER BY id DESC',
+            'SELECT Amount, Category, Date, CostCategory FROM FinancialApp_statistics WHERE UserID == %s ORDER BY id DESC',
             [user_id]).fetchall()
 
     return data

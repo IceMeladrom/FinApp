@@ -34,11 +34,6 @@ class CostCategory(forms.Form):
                                widget=forms.TextInput(attrs={'class': 'form-control'}))
 
 
-    class CostDescription(forms.Form):
-        Description = forms.CharField(label='Введите описание', required=False,
-                                   widget=forms.TextInput(attrs={'class': 'form-control'}))
-
-
 class ChangeUserData(forms.Form):
     Password = forms.CharField(label='Введите новый пароль', min_length=5,
                                widget=forms.PasswordInput(attrs={'class': 'form-control'}), required=False)
