@@ -17,6 +17,9 @@
             {{ Transaction }}
             <input type="text" name="{{ Transaction.prefix }}" hidden>
             {{ CostCategory }}
+            <input type="text" name="{{ CostCategory.prefix }}" hidden>
+            {{ CostDescription }}
+            <input type="text" name="{{ CostDescription.prefix }}" hidden>
         </div>
         <button class="btn btn-warning" name="Plus">Добавить</button>
         <button class="btn btn-warning" name="Minus">Убавить</button>
@@ -30,6 +33,7 @@
             <th>Транзакция</th>
             <th>Дата</th>
             <th>Категория</th>
+            <th>Описание</th>
         </tr>
         </thead>
         <tbody>
@@ -42,6 +46,7 @@
                 {% endif %}
                 <td>{{ i.2 }}</td>
                 <td>{{ i.3 }}</td>
+                <td>{{ i.4 }}</td>
             </tr>
         {% endfor %}
         </tbody>
