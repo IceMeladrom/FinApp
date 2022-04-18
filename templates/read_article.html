@@ -9,17 +9,13 @@
 
 {% block content %}
     <h2>{{ article.0 }}</h2>
-    <p>
     <div>Посещений: {{ article.5 }} Лайков: {{ article.6 }} Дизлайков: {{ article.7 }}</div>
-    </p>
-    {% for i in text %}
-        <section>{{ i }}</section>
-    {% endfor %}
-    <p>
+    <textarea class="form-control" disabled="disabled">
+        {{ text }}
+    </textarea>
     <address rel="author">Написал: {{ article.2 }}</address>
     <time>Создано: {{ article.3 }}</time>
     <time>Обновлено: {{ article.4 }}</time>
-    </p>
     <form method="POST">
         {% csrf_token %}
         <p>Понравилась статья?</p>
@@ -39,7 +35,18 @@
     {% if article.9 == user or user == '1' %}
         <div>
             <a href="edit/" class="btn btn-warning mt-3 mb-2">Редактировать статью</a>
-            <a href="/textbook/exam/{{ article.8 }}/edit/" class="btn btn-warning mt-3 mb-2">Редактировать экзамен</a>
+            <a href="/textbook/exam/{{ article.8 }}/edit/" class="btn btn-warning mt-3 mb-2">Редактировать
+                экзамен</a>
         </div>
     {% endif %}
+{% endblock %}
+
+{% block base_script %}
+    <script type="text/javascript" src="//js.nicedit.com/nicEdit-latest.js"></script>
+    <script type="text/javascript">
+        bkLib.onDomLoaded(function () {
+            nicEditors.allTextAreas();
+            document.getElementsByClassName(' nicEdit-main ')[0].setAttribute('contenteditable', 'false');
+        });
+    </script>
 {% endblock %}

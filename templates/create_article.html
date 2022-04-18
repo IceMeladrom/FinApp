@@ -61,8 +61,15 @@
         </div>
         <input type="submit" class="btn btn-warning m-1" value="Отправить">
     </form>
-    {% block base_script %}
-        {% load static %}
-        <script src="{% static 'js/create_exam.js' %}"></script>
-    {% endblock %}
+{% endblock %}
+
+{% block base_script %}
+    {% load static %}
+    <script src="{% static 'js/create_exam.js' %}"></script>
+    <script type="text/javascript" src="//js.nicedit.com/nicEdit-latest.js"></script>
+    <script type="text/javascript">
+        bkLib.onDomLoaded(function () {
+            nicEditors.allTextAreas()
+        });
+    </script>
 {% endblock %}

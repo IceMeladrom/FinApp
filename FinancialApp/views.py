@@ -353,6 +353,7 @@ def create_article(request):
                     Question = i[0]
                     Answers = ';;'.join(i[1])
                     CorrectAnswers = ';;'.join(i[2])
+                    print(request.POST)
                     data = FinancialApp.models.Exams(ArticleID=ArticleID, Question=Question, Answers=Answers,
                                                      CorrectAnswer=CorrectAnswers)
                     data.save()
@@ -423,7 +424,7 @@ def read_article(request, articleID):
                                                    [articleID]).fetchall())
                 context['pagename'] = article[0]
                 context['article'] = article
-                context['text'] = article[1].split('\r\n')
+                context['text'] = article[1]
                 context['user'] = str(get_user_id(request))
                 context['LastScore'] = LastScore
                 context['MaxScore'] = MaxScore
