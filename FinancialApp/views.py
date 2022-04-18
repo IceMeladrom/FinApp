@@ -303,7 +303,23 @@ def table(request):
 def textbook(request):
     if is_login(request):
         context = get_base_context(request, 'Учебник')
-        articles = connection.cursor().execute('SELECT * FROM FinancialApp_articles').fetchall()
+
+        articles = [list(i) for i in connection.cursor().execute('SELECT * FROM FinancialApp_articles').fetchall()]
+        last_lesson = connection.cursor().execute(
+            'SELECT max(ArticleID) FROM FinancialApp_passedexams WHERE Passed==1 AND UserID==%s',
+            [get_user_id(request)]).fetchone()[0]
+        for i in articles:
+            i.append(0)
+
+        if get_user_id(request) == 1:
+            for i in articles:
+                i[-1] = 1
+        elif last_lesson is None:
+            articles[0][-1] = 1
+        else:
+            for i in range(last_lesson + 1):
+                articles[i][-1] = 1
+
         context['articles'] = articles
         return render(request, 'textbook.html', context)
     else:
