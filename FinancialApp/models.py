@@ -20,6 +20,8 @@ class Statistics(models.Model):
     Amount = models.IntegerField()
     Date = models.DateTimeField(default=now, editable=False)
     Category = models.TextField()
+    CostCategory = models.TextField(blank=True)
+    CostDescription = models.TextField(blank=True)
 
 
 class Articles(models.Model):
@@ -53,3 +55,8 @@ class ArticlesLikes(models.Model):
     UserID = models.IntegerField()
     ArticleID = models.IntegerField()
     Like = models.BooleanField()
+
+
+class Purpose(models.Model):
+    UserID = models.IntegerField()
+    Purpose = models.TextField()

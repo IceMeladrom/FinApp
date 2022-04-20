@@ -292,9 +292,28 @@ def table(request):
         context = get_base_context(request, 'Table')
         error = False
         id = get_user_id(request)
+
+        if request.method == 'POST':
+            if 'Purpose' in request.POST:
+                Purpose = FinancialApp.forms.Purpose(request.POST, prefix='Purpose')
+                if Purpose.is_valid():
+                    pur = str(Purpose.data['Purpose-Goal'])
+                    with connection.cursor() as cursor:
+                        cursor.execute(
+                            'INSERT INTO FinancialApp_purpose(UserID, Purpose) VALUES(%s, %s)',
+                            [id, pur])
+
         with connection.cursor() as cursor:
             amount = cursor.execute('SELECT Amount FROM FinancialApp_users WHERE id == %s', [id]).fetchone()[0]
+        with connection.cursor() as cursor:
+            purpose_text = cursor.execute('SELECT Purpose FROM FinancialApp_purpose WHERE UserID == %s', [id]).fetchall()
+
+        Purpose = FinancialApp.forms.Purpose(prefix='Purpose')
+
+        context['Purpose'] = Purpose
         context['amount'] = amount
+        context['purpose_text'] = purpose_text
+
         return render(request, 'table.html', context)
     else:
         return redirect('/login/')

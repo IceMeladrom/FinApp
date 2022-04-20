@@ -8,10 +8,25 @@
 {% endblock %}
 
 {% block content %}
+
+    <h4>Баланс: {{ amount }} $</h4>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="mb-3">
+            {{ Purpose }}
+            <input type="text" name="{{ Purpose.prefix }}" hidden>
+        </div>
+        <button class="btn btn-warning" name="Plus">Добавить</button>
+    </form>
+    <canvas id="myChart" height="200" width="500"></canvas>
+
     {% for i in data %}
         <div>{{ i.0 }}: {{ i.1 }}</div>
     {% endfor %}
-    <h4>Баланс: {{ amount }} $</h4>
+
+    <h4>Цели: {{ purpose_text }} </h4>
+
     <dl>
         <table>
             <colgroup>
