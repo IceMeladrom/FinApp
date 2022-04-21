@@ -307,6 +307,7 @@ def table(request):
             amount = cursor.execute('SELECT Amount FROM FinancialApp_users WHERE id == %s', [id]).fetchone()[0]
         with connection.cursor() as cursor:
             purpose_text = cursor.execute('SELECT Purpose FROM FinancialApp_purpose WHERE UserID == %s', [id]).fetchall()
+            purpose_text = reversed(purpose_text)
 
         Purpose = FinancialApp.forms.Purpose(prefix='Purpose')
 
