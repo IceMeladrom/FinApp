@@ -33,8 +33,14 @@ class CostCategory(forms.Form):
     Category = forms.CharField(label='Введите категорию', required=False,
                                widget=forms.TextInput(attrs={'class': 'form-control'}))
 
+
 class CostDescription(forms.Form):
     Description = forms.CharField(label='Введите описание', required=False,
+                               widget=forms.TextInput(attrs={'class': 'form-control'}))
+
+
+class Purpose(forms.Form):
+    Goal = forms.CharField(label='Введите цель', required=False,
                                widget=forms.TextInput(attrs={'class': 'form-control'}))
 
 
@@ -55,4 +61,4 @@ class UserAvatar(forms.Form):
 
 class Article(forms.Form):
     Name = forms.CharField(label='Название статьи', widget=forms.TextInput(attrs={'placeholder': 'Название статьи', 'class': 'form-control'}))
-    Text = forms.CharField(label='Текст статьи', widget=forms.Textarea(attrs={'placeholder': 'Текст статьи', 'class': 'form-control'}))
+    Text = forms.CharField(label='Текст статьи', widget=forms.Textarea(attrs={'placeholder': 'Текст статьи', 'class': 'form-control', 'id': 'editor'}))

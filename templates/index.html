@@ -8,13 +8,7 @@
 {% endblock %}
 
 {% block content %}
-    {% if login == "Anon" %}
-        <h1 class="text-center">Привет, {{login}}! Добро пожаловать на <i>FinApp</i></h1>
-    {% endif %}
-    {% if login != "Anon" %}
-        <h1 class="text-center">Привет, {{name}}! Добро пожаловать на <i>FinApp</i></h1>
-    {% endif %}
-    <h2>Курсы валют:</h2>
+    <h1 class="text-center">Добро пожаловать на <i>FinApp</i></h1>
     <table class="table table-hover">
         <thead>
         <tr>

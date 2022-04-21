@@ -47,10 +47,6 @@ def get_base_context(request, pagename):
 
     if is_login(request):
         context['login'] = request.session['login']
-
-        context['name'] = connection.cursor().execute('SELECT Name FROM FinancialApp_users WHERE Login == %s',
-                                                       [request.session['login']]).fetchone()[0]
-
         context['user_avatar'] = connection.cursor().execute('SELECT Avatar FROM FinancialApp_users WHERE Login==%s',
                                                              [context['login']]).fetchone()[0]
     else:
@@ -296,9 +292,28 @@ def table(request):
         context = get_base_context(request, 'Table')
         error = False
         id = get_user_id(request)
+
+        if request.method == 'POST':
+            if 'Purpose' in request.POST:
+                Purpose = FinancialApp.forms.Purpose(request.POST, prefix='Purpose')
+                if Purpose.is_valid():
+                    pur = str(Purpose.data['Purpose-Goal'])
+                    with connection.cursor() as cursor:
+                        cursor.execute(
+                            'INSERT INTO FinancialApp_purpose(UserID, Purpose) VALUES(%s, %s)',
+                            [id, pur])
+
         with connection.cursor() as cursor:
             amount = cursor.execute('SELECT Amount FROM FinancialApp_users WHERE id == %s', [id]).fetchone()[0]
+        with connection.cursor() as cursor:
+            purpose_text = cursor.execute('SELECT Purpose FROM FinancialApp_purpose WHERE UserID == %s', [id]).fetchall()
+
+        Purpose = FinancialApp.forms.Purpose(prefix='Purpose')
+
+        context['Purpose'] = Purpose
         context['amount'] = amount
+        context['purpose_text'] = purpose_text
+
         return render(request, 'table.html', context)
     else:
         return redirect('/login/')
@@ -307,7 +322,23 @@ def table(request):
 def textbook(request):
     if is_login(request):
         context = get_base_context(request, 'Учебник')
-        articles = connection.cursor().execute('SELECT * FROM FinancialApp_articles').fetchall()
+
+        articles = [list(i) for i in connection.cursor().execute('SELECT * FROM FinancialApp_articles').fetchall()]
+        last_lesson = connection.cursor().execute(
+            'SELECT max(ArticleID) FROM FinancialApp_passedexams WHERE Passed==1 AND UserID==%s',
+            [get_user_id(request)]).fetchone()[0]
+        for i in articles:
+            i.append(0)
+
+        if get_user_id(request) == 1:
+            for i in articles:
+                i[-1] = 1
+        elif last_lesson is None:
+            articles[0][-1] = 1
+        else:
+            for i in range(last_lesson + 1):
+                articles[i][-1] = 1
+
         context['articles'] = articles
         return render(request, 'textbook.html', context)
     else:
@@ -341,6 +372,7 @@ def create_article(request):
                     Question = i[0]
                     Answers = ';;'.join(i[1])
                     CorrectAnswers = ';;'.join(i[2])
+                    print(request.POST)
                     data = FinancialApp.models.Exams(ArticleID=ArticleID, Question=Question, Answers=Answers,
                                                      CorrectAnswer=CorrectAnswers)
                     data.save()
@@ -411,7 +443,7 @@ def read_article(request, articleID):
                                                    [articleID]).fetchall())
                 context['pagename'] = article[0]
                 context['article'] = article
-                context['text'] = article[1].split('\r\n')
+                context['text'] = article[1]
                 context['user'] = str(get_user_id(request))
                 context['LastScore'] = LastScore
                 context['MaxScore'] = MaxScore

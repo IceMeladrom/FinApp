@@ -9,18 +9,25 @@
 
 {% block content %}
     <a href="create/" class="btn btn-warning mt-3 mb-2">Создать статью</a>
-    <div style="display: flex; padding: 10px 0;">
-        {% for article in articles %}
-            <div class="p-3 me-3" style="border: solid 1px; max-width: 400px;">
-                <h2>{{ article.9 }}</h2>
-                <h4>Написал статью: {{ article.1 }}
-                    <br>
-                    <time>Создана: {{ article.3 }}</time>
-                    <br>
-                    <time>Последнее обновление: {{ article.4 }}</time>
-                </h4>
-                <a href="read/{{ article.0 }}" class="btn btn-warning">Прочитать</a>
-            </div>
-        {% endfor %}
+    <div class="container">
+        <div class="row">
+            {% for article in articles %}
+                <div class="p-3 mt-3 mb-3 me-3 col" style="border: solid 1px; min-width: 400px">
+                    <h4>{{ article.9 }}</h4>
+                    {% if article.10 == 1 %}
+                        <p class="m-0 p-0" style="color: green">Доступен</p>
+                    {% else %}
+                        <p class="m-0 p-0" style="color: red;">Экзамен прошлого урока не пройден</p>
+                    {% endif %}
+                    <h6>Написал(а) статью: {{ article.1 }}
+                        <br>
+                        <time>Создана: {{ article.3 }}</time>
+                        <br>
+                        <time>Последнее обновление: {{ article.4 }}</time>
+                    </h6>
+                    <a href="read/{{ article.0 }}" class="btn btn-warning">Прочитать</a>
+                </div>
+            {% endfor %}
+        </div>
     </div>
 {% endblock %}

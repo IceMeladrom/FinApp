@@ -8,10 +8,35 @@
 {% endblock %}
 
 {% block content %}
+
+    <h4>Баланс: {{ amount }} $</h4>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="mb-3">
+            {{ Purpose }}
+            <input type="text" name="{{ Purpose.prefix }}" hidden>
+        </div>
+        <button class="btn btn-warning" name="Plus">Добавить</button>
+    </form>
+    <canvas id="myChart" height="200" width="500"></canvas>
+
     {% for i in data %}
         <div>{{ i.0 }}: {{ i.1 }}</div>
     {% endfor %}
-    <h4>Баланс: {{ amount }} $</h4>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>Цели</th>
+        </tr>
+        </thead>
+        {% for purpose in purpose_text %}
+            <tr>
+                <td>{{ purpose.0 }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
     <dl>
         <table>
             <colgroup>
@@ -20,23 +45,19 @@
             </colgroup>
             <tr>
                 <th>Советы</th>
-                <th>Цели</th>
             </tr>
             <tr>
                 <td>Ведите бюджет ежедневно.</td>
-                <td>Закрыть кредитную карту.</td>
             </tr>
             <tr>
                 <td>Сберегайте часть доходов сразу при их получении.</td>
-                <td>Сделать ремонт, купить бытовую технику или электронику.</td>
             </tr>
             <tr>
                 <td>Формируйте неприкосновенный запас средств.</td>
-                <td>Порадовать себя чем-то приятным.</td>
+
             </tr>
             <tr>
                 <td>Не стоит отказываться от запланированных трат.</td>
-                <td>Сформировать подушку безопасности.</td>
             </tr>
         </table>
     </dl>
