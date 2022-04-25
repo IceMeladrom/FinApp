@@ -604,3 +604,7 @@ def exam_data_processing(data):
         except KeyError:
             break
     return qac
+
+    def about_us():
+        context = get_base_context(request, 'О нас')
+        return render(request, 'about.html', context)
