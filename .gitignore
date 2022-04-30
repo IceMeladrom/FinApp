@@ -3,7 +3,7 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,django,visualstudiocode,pycharm+all,venv,git,sublimetext,windows,linux
 
 # sqlite3
-.sqlite3
+*.sqlite3
 
 ### Django ###
 *.log
