@@ -67,7 +67,7 @@ def get_info_for_diary_fast_block(request):
     else:
         last_note = 'Получил '
 
-    last_note += str(abs(last_note_data[0])) + '₽ на ' + last_note_data[1] + ', потому что ' + last_note_data[2]
+    last_note += str(abs(last_note_data[0])) + '₽, потому что ' + last_note_data[2]
 
     return amount, last_note
 
