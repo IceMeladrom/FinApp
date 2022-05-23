@@ -1,15 +1,16 @@
 import datetime
-import time
 import math
+import time
+from datetime import datetime
 
+import django.db.utils
 from django.db import connection
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect
-import django.db.utils
+from django.utils.timezone import now
+
 import FinancialApp.forms
 import FinancialApp.models
-from django.utils.timezone import now
-from datetime import datetime
 
 
 # Create your views here.
@@ -17,25 +18,40 @@ from datetime import datetime
 def currency_rates():
     from bs4 import BeautifulSoup
     import urllib.request
-    p = urllib.request.urlopen('https://www.cbr.ru/eng/currency_base/daily/')
-    soup = BeautifulSoup(p, 'html.parser')
-    js = {}
-    table = soup.find('table')
-    for tr in table.find_all('tr'):
-        data = tr.find_all('td')
-        try:
-            js[data[1].get_text()] = {
-                'Num сode': data[0].get_text(),
-                'Char code': data[1].get_text(),
-                'Unit': data[2].get_text(),
-                'Currency': data[3].get_text(),
-                'Rate': data[4].get_text(),
-            }
-        except IndexError:
-            continue
-    currency = []
-    for i in js:
-        currency.append((js[i]['Char code'], js[i]['Unit'], js[i]['Currency'], js[i]['Rate']))
+    import os
+
+    if not(os.path.exists('static/temp/currency_rate.txt')) or time.time() - os.path.getmtime('static/temp/currency_rate.txt') > 3600:
+        p = urllib.request.urlopen('https://www.cbr.ru/eng/currency_base/daily/')
+        soup = BeautifulSoup(p, 'html.parser')
+        js = {}
+        table = soup.find('table')
+        for tr in table.find_all('tr'):
+            data = tr.find_all('td')
+            try:
+                js[data[1].get_text()] = {
+                    'Num сode': data[0].get_text(),
+                    'Char code': data[1].get_text(),
+                    'Unit': data[2].get_text(),
+                    'Currency': data[3].get_text(),
+                    'Rate': data[4].get_text(),
+                }
+            except IndexError:
+                continue
+        currency = []
+        temp_file = open('static/temp/currency_rate.txt', 'w')
+        for i in js:
+            currency.append((js[i]['Char code'], js[i]['Unit'], js[i]['Currency'], js[i]['Rate']))
+            temp_file.write(
+                js[i]['Char code'] + ';;' + js[i]['Unit'] + ';;' + js[i]['Currency'] + ';;' + str(js[i]['Rate']) + '\n')
+
+        temp_file.close()
+
+    else:
+        temp_file = open('static/temp/currency_rate.txt', 'r')
+        currency = []
+        for i in temp_file.readlines():
+            currency.append(tuple(i.strip().split(';;')))
+        temp_file.close()
     return currency
 
 
@@ -200,7 +216,8 @@ def change_profile_data(request):
 
 def get_profile_data(id):
     with connection.cursor() as cursor:
-        data = cursor.execute('SELECT Email, Amount, Name, Surname, Avatar FROM FinancialApp_users WHERE id==%s', [id]).fetchone()
+        data = cursor.execute('SELECT Email, Amount, Name, Surname, Avatar FROM FinancialApp_users WHERE id==%s',
+                              [id]).fetchone()
     dict_data = []
     for i in range(len(data)):
         dict_data.append((cursor.description[i][0], data[i]))
@@ -339,13 +356,14 @@ def table(request):
                 Purpose = FinancialApp.forms.Purpose(request.POST, prefix='Purpose')
                 if Purpose.is_valid():
                     pur = str(Purpose.data['Purpose-Goal'])
-                    Purpose = FinancialApp.models.Purpose(Purpose=pur, UserID = user_id)
+                    Purpose = FinancialApp.models.Purpose(Purpose=pur, UserID=user_id)
                     Purpose.save()
 
         with connection.cursor() as cursor:
             amount = cursor.execute('SELECT Amount FROM FinancialApp_users WHERE id == %s', [user_id]).fetchone()[0]
         with connection.cursor() as cursor:
-            purpose_text = cursor.execute('SELECT Purpose, id FROM FinancialApp_purpose WHERE UserID == %s', [user_id]).fetchall()
+            purpose_text = cursor.execute('SELECT Purpose, id FROM FinancialApp_purpose WHERE UserID == %s',
+                                          [user_id]).fetchall()
 
         Purpose = FinancialApp.forms.Purpose(prefix='Purpose')
 
