@@ -200,7 +200,7 @@ def change_profile_data(request):
 
 def get_profile_data(id):
     with connection.cursor() as cursor:
-        data = cursor.execute('SELECT * FROM FinancialApp_users WHERE id==%s', [id]).fetchone()
+        data = cursor.execute('SELECT Email, Amount, Name, Surname, Avatar FROM FinancialApp_users WHERE id==%s', [id]).fetchone()
     dict_data = []
     for i in range(len(data)):
         dict_data.append((cursor.description[i][0], data[i]))
@@ -389,7 +389,7 @@ def create_article(request):
         context = get_base_context(request, 'Создать статью')
         if request.method == 'POST':
             data = dict(request.POST)
-
+            print(data)
             form = FinancialApp.forms.Article(request.POST)
             if form.is_valid():
                 user = FinancialApp.models.Users.objects.get(Login=request.session['login'])
@@ -596,7 +596,7 @@ def edit_exam(request, articleID):
             raise Http404
         if FinancialApp.models.Articles.objects.filter(id=articleID).exists():
             context = get_base_context(request, 'Редактировать экзамен')
-
+            context['articleID'] = articleID
             if request.method == 'POST':
                 data = dict(request.POST)
                 qac = exam_data_processing(data)

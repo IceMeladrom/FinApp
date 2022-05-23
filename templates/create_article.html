@@ -7,6 +7,7 @@
 {% endblock %}
 
 {% block content %}
+    <a href="../" class="btn btn-warning mb-3 mt-3">Назад</a>
     <form method="POST" name="form_global">
         {% csrf_token %}
         {% for i in form %}
@@ -58,14 +59,14 @@
                    onclick="remove_question(document.getElementById('questions').lastElementChild)"
                    value="Удалить вопрос">
         </div>
-        <input type="submit" class="btn btn-warning m-1" value="Отправить">
+        <button class="btn btn-warning m-1">Отправить</button>
     </form>
 {% endblock %}
 
 {% block base_script %}
     {% load static %}
     <script src="{% static 'js/create_exam.js' %}"></script>
-    <script type="text/javascript" src="//js.nicedit.com/nicEdit-latest.js"></script>
+    <script type="text/javascript" src="https://js.nicedit.com/nicEdit-latest.js"></script>
     <script type="text/javascript">
         bkLib.onDomLoaded(function () {
             nicEditors.allTextAreas()

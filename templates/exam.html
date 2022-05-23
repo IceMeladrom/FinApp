@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block content %}
-    <a href="/textbook/read/{{ articleID }}" class="btn btn-warning mt-3">Вернуться к уроку</a>
+    <a href="/textbook/read/{{ articleID }}" class="btn btn-warning mt-3">Назад</a>
     <h2>Тест по уроку №{{ articleID }}</h2>
     <form method="POST">
         {% csrf_token %}

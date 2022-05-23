@@ -61,4 +61,4 @@ class UserAvatar(forms.Form):
 
 class Article(forms.Form):
     Name = forms.CharField(label='Название статьи', widget=forms.TextInput(attrs={'placeholder': 'Название статьи', 'class': 'form-control'}))
-    Text = forms.CharField(label='Текст статьи', widget=forms.Textarea(attrs={'placeholder': 'Текст статьи', 'class': 'form-control', 'id': 'editor'}))
+    Text = forms.CharField(label='Текст статьи', required=False, widget=forms.Textarea(attrs={'placeholder': 'Текст статьи', 'class': 'form-control', 'id': 'editor'}))
