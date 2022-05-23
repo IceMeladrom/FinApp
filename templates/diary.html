@@ -3,7 +3,6 @@
 
 {% block navbar %}
     <li class="nav-item"><a class="nav-link text-warning" href="/diary/">Дневник</a></li>
-    <li class="nav-item"><a class="nav-link" href="/profile/">Профиль</a></li>
     <li class="nav-item"><a class="nav-link" href="/table/">Table</a></li>
     <li class="nav-item"><a class="nav-link" href="/textbook/">Учебник</a></li>
 {% endblock %}
@@ -40,9 +39,9 @@
         {% for i in table %}
             <tr>
                 {% if i.1 == "Зарплата" %}
-                    <td style="color: green">+{{ i.0 }}$</td>
+                    <td style="color: green">+{{ i.0 }}₽</td>
                 {% else %}
-                    <td style="color: darkred">{{ i.0 }}$</td>
+                    <td style="color: darkred">{{ i.0 }}₽</td>
                 {% endif %}
                 <td>{{ i.2 }}</td>
                 <td>{{ i.3 }}</td>

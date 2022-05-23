@@ -55,9 +55,50 @@ def get_base_context(request, pagename):
     return context
 
 
+def get_info_for_diary_fast_block(request):
+    user_id = get_user_id(request)
+    with connection.cursor() as cursor:
+        amount = cursor.execute('SELECT Amount FROM FinancialApp_users WHERE id==%s', [user_id]).fetchone()[0]
+        last_note_data = list(cursor.execute(
+            'SELECT Amount, CostCategory, CostDescription FROM FinancialApp_statistics WHERE UserID==%s ORDER BY id DESC LIMIT 1',
+            [user_id]).fetchone())
+    if last_note_data[0] < 0:
+        last_note = 'Потратил '
+    else:
+        last_note = 'Получил '
+
+    last_note += str(abs(last_note_data[0])) + '₽ на ' + last_note_data[1] + ', потому что ' + last_note_data[2]
+
+    return amount, last_note
+
+
+def get_info_for_textbook_fast_block(request):
+    user_id = get_user_id(request)
+    with connection.cursor() as cursor:
+        number_of_passed_exams = len(
+            cursor.execute('SELECT id FROM FinancialApp_passedexams WHERE UserID==%s AND Passed==1 GROUP BY ArticleID',
+                           [user_id]).fetchall())
+        last_passed_exam = cursor.execute(
+            'SELECT ArticleID FROM FinancialApp_passedexams WHERE UserID==%s AND Passed==1 ORDER BY id DESC LIMIT 1',
+            [user_id]).fetchone()[0]
+    return number_of_passed_exams, last_passed_exam
+
+
 def index(request):
     context = get_base_context(request, 'Главная страница')
     context['currency'] = currency_rates()
+
+    if is_login(request):
+        context['is_logged_in'] = True
+        try:
+            context['amount'], context['last_note'] = get_info_for_diary_fast_block(request)
+        except TypeError:
+            context['amount'], context['last_note'] = 0, 'отсутствует'
+
+        try:
+            context['number_of_passed_exams'], context['last_passed_exam'] = get_info_for_textbook_fast_block(request)
+        except TypeError:
+            context['number_of_passed_exams'], context['last_passed_exam'] = 0, 'не найден'
     return render(request, 'index.html', context)
 
 
