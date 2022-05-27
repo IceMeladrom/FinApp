@@ -7,7 +7,9 @@
 {% endblock %}
 
 {% block content %}
-    <a href="create/" class="btn btn-warning mt-3 mb-2">Создать статью</a>
+    {% if is_admin %}
+        <a href="create/" class="btn btn-warning mt-3 mb-2">Создать статью</a>
+    {% endif %}
     <div class="container">
         <div class="row">
             {% for article in articles %}

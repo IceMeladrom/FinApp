@@ -20,7 +20,8 @@ def currency_rates():
     import urllib.request
     import os
 
-    if not(os.path.exists('static/temp/currency_rate.txt')) or time.time() - os.path.getmtime('static/temp/currency_rate.txt') > 3600:
+    if not (os.path.exists('static/temp/currency_rate.txt')) or time.time() - os.path.getmtime(
+            'static/temp/currency_rate.txt') > 3600:
         p = urllib.request.urlopen('https://www.cbr.ru/eng/currency_base/daily/')
         soup = BeautifulSoup(p, 'html.parser')
         js = {}
@@ -397,6 +398,7 @@ def textbook(request):
                 articles[i][-1] = 1
 
         context['articles'] = articles
+        context['is_admin'] = True if request.session['login'] == 'admin' else False
         return render(request, 'textbook.html', context)
     else:
         return redirect('/login/')
@@ -404,6 +406,8 @@ def textbook(request):
 
 def create_article(request):
     if is_login(request):
+        if request.session['login'] != 'admin':
+            return redirect('/textbook/')
         context = get_base_context(request, 'Создать статью')
         if request.method == 'POST':
             data = dict(request.POST)
