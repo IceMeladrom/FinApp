@@ -394,8 +394,11 @@ def textbook(request):
         elif last_lesson is None:
             articles[0][-1] = 1
         else:
-            for i in range(last_lesson + 1):
-                articles[i][-1] = 1
+            if last_lesson == 0:
+                articles[0][-1] = 1
+            else:
+                for i in range(last_lesson + 1):
+                    articles[i][-1] = 1
 
         context['articles'] = articles
         context['is_admin'] = True if request.session['login'] == 'admin' else False
